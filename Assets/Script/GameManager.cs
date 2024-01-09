@@ -2,9 +2,31 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
+    enum CurrentScene
+    {
+        title,
+        main
+    }
+
+    public class Data
+    {
+        public string name;
+        public int money;
+        public int startday;
+        public int currentday;
+
+        public void ReadData()
+        {
+            Debug.Log("name : " + name);
+        }
+    }
+    string dataFileName = "data.json";
+
+    private CurrentScene scene;
 
     public static GameManager instance = null;
 
@@ -50,6 +72,7 @@ public class GameManager : MonoBehaviour
         if (instance != null) Destroy(gameObject);
         instance = this;
         DontDestroyOnLoad(gameObject);
+        scene = CurrentScene.title;
     }
 
     // Start is called before the first frame update
@@ -66,7 +89,7 @@ public class GameManager : MonoBehaviour
         AuctionPrice.Add("lettuce", 0);
         AuctionPrice.Add("spinach", 0);
         AuctionPrice.Add("garlic", 0);
-
+        init();
         DateSet();
     }
 
@@ -74,6 +97,37 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         OnClickConstruction();
+    }
+
+    private void SceneManager()
+    {
+        switch(scene)
+        {
+            case CurrentScene.title:
+                break;
+
+            case CurrentScene.main:
+                break;
+        }
+    }
+
+    private void init()
+    {
+        Data data = new Data();
+        string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
+
+        if (File.Exists(filePath))
+        {
+            string jsonData = File.ReadAllText(filePath);
+            data = JsonUtility.FromJson<Data>(jsonData);
+            Debug.Log("name: " + data.name);
+        }
+        else
+        {
+            string saveData = JsonUtility.ToJson(data, true);
+            filePath = Application.persistentDataPath + "/userdata.json";
+            File.WriteAllText(filePath, saveData);
+        }
     }
 
     private void AuctionPricing()
