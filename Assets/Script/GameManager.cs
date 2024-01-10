@@ -97,6 +97,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         OnClickConstruction();
+        Cultivation();
     }
 
     private void SceneManager()
@@ -202,10 +203,22 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
+    }
 
-        else if (Input.GetMouseButtonUp(1))
+    private void Cultivation()
+    {
+        if (Input.GetMouseButtonUp(0))
         {
+            Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
 
+            if (hit.collider != null)
+            {
+                if (hit.collider.gameObject == Field)
+                {
+                    Debug.Log("¹ç");
+                }
+            }
         }
     }
 }
