@@ -12,6 +12,30 @@ public class GameManager : MonoBehaviour
         main
     }
 
+    enum ActionState
+    {
+        none,
+        cultivate,
+        use_item
+    }
+    [SerializeField]private ActionState currentActionState;
+
+    /// <summary>
+    /// ui에서 설정한 값에 따라 아이템 사용, 작물 심기 상태 변경
+    /// </summary>
+    public void SetActionState(int i)
+    {
+        if(i == 1)
+        {
+            currentActionState = ActionState.cultivate;
+        }
+
+        else
+        {
+            currentActionState = ActionState.use_item;
+        }
+    }
+
     public class Data
     {
         public string name;
@@ -98,6 +122,8 @@ public class GameManager : MonoBehaviour
     {
         OnClickConstruction();
         Cultivation();
+        SetUserAction();
+        InstanceField();
     }
 
     private void SceneManager()
@@ -129,6 +155,43 @@ public class GameManager : MonoBehaviour
             filePath = Application.persistentDataPath + "/userdata.json";
             File.WriteAllText(filePath, saveData);
         }
+
+        currentActionState = ActionState.none;
+    }
+
+    private void InstanceField()
+    {
+        Vector3 pos = GameObject.Find("ParentField").transform.position;
+
+        for(int i = 0; i < 3; i++)
+        {
+            for(int j = 0; j < 3; j++)
+            {
+                pos += Vector3.right;
+                if(!IsObjectAtPosition(pos))
+                {
+                    GameObject cloneField = Instantiate(Field, pos, Quaternion.identity);
+                    cloneField.transform.parent = GameObject.Find("ParentField").transform;
+                }
+            }
+            pos += Vector3.down;
+            pos += Vector3.left * 3;
+        }
+    }
+    
+    /// <summary>
+    /// 위치에 오브젝트가 존재하는지 여부
+    /// 3d로 할 때에도 마찬가지로 사용 가능할듯
+    /// </summary>
+    private bool IsObjectAtPosition(Vector3 pos)
+    {
+        Vector2 pos2D = new Vector2(pos.x, pos.y);
+        Collider2D[] colliders = Physics2D.OverlapPointAll(pos2D);
+        if (colliders.Length > 0)
+        {
+            return true;
+        }
+        return false;
     }
 
     private void AuctionPricing()
@@ -176,6 +239,22 @@ public class GameManager : MonoBehaviour
         StartDay[1] = dt.Month;
         StartDay[2] = dt.Day;
         CurrentDay = dt.Day;
+    }
+
+    private void SetUserAction()
+    {
+        switch (currentActionState)
+        {
+            case ActionState.none:
+                break;
+
+            case ActionState.cultivate:
+                Debug.Log("afdfd");
+                break;
+
+            case ActionState.use_item:
+                break;
+        }
     }
 
     private void OnClickConstruction()
