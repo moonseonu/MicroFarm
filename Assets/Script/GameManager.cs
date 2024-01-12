@@ -36,23 +36,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public class Data
+    private class Data
     {
         public string name;
         public int money;
         public int startday;
         public int currentday;
-
-        public void ReadData()
-        {
-            Debug.Log("name : " + name);
-        }
     }
+    Data data;
     string dataFileName = "data.json";
 
     private CurrentScene scene;
 
     public static GameManager instance = null;
+    UIManager ui;
 
     [SerializeField] private GameObject Lettuce;
     [SerializeField] private GameObject Spinach;
@@ -76,7 +73,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject Fertilizer_Facility;
     [SerializeField] private GameObject Storage;
 
-    [SerializeField] private int GameMoney = 0;
+    [SerializeField] private int gameMoney;
+    public int GameMoney
+    {
+        get { return gameMoney; }
+        set { gameMoney = value; }
+    }
     [SerializeField] private Dictionary<string, int>CropsLevel = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
@@ -96,6 +98,8 @@ public class GameManager : MonoBehaviour
         if (instance != null) Destroy(gameObject);
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        ui = GetComponent<UIManager>();
         scene = CurrentScene.title;
     }
 
@@ -140,14 +144,14 @@ public class GameManager : MonoBehaviour
 
     private void init()
     {
-        Data data = new Data();
+        data = new Data();
         string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
 
         if (File.Exists(filePath))
         {
             string jsonData = File.ReadAllText(filePath);
             data = JsonUtility.FromJson<Data>(jsonData);
-            Debug.Log("name: " + data.name);
+            Debug.Log(data.startday);
         }
         else
         {
@@ -157,6 +161,9 @@ public class GameManager : MonoBehaviour
         }
 
         currentActionState = ActionState.none;
+        GameMoney = 0;
+        ui.ui.Name = data.name;
+        ui.ui.Money = data.money;
     }
 
     private void InstanceField()
