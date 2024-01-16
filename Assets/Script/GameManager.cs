@@ -12,29 +12,9 @@ public class GameManager : MonoBehaviour
         main
     }
 
-    enum ActionState
-    {
-        none,
-        cultivate,
-        use_item
-    }
-    [SerializeField]private ActionState currentActionState;
-
     /// <summary>
     /// ui에서 설정한 값에 따라 아이템 사용, 작물 심기 상태 변경
     /// </summary>
-    public void SetActionState(int i)
-    {
-        if(i == 1)
-        {
-            currentActionState = ActionState.cultivate;
-        }
-
-        else
-        {
-            currentActionState = ActionState.use_item;
-        }
-    }
 
     private class Data
     {
@@ -49,7 +29,8 @@ public class GameManager : MonoBehaviour
     private CurrentScene scene;
 
     public static GameManager instance = null;
-    UIManager ui;
+    private UIManager ui;
+    private FieldManager fm;
 
     [SerializeField] private GameObject Lettuce;
     [SerializeField] private GameObject Spinach;
@@ -74,6 +55,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject Storage;
 
     [SerializeField] private int gameMoney;
+    [SerializeField] private bool useItem;
+    public bool UseItem
+    {
+        get { return useItem; }
+        set { useItem = value; }
+    }
     public int GameMoney
     {
         get { return gameMoney; }
@@ -125,8 +112,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         OnClickConstruction();
-        Cultivation();
-        SetUserAction();
         InstanceField();
     }
 
@@ -160,7 +145,6 @@ public class GameManager : MonoBehaviour
             File.WriteAllText(filePath, saveData);
         }
 
-        currentActionState = ActionState.none;
         GameMoney = 0;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
@@ -248,22 +232,6 @@ public class GameManager : MonoBehaviour
         CurrentDay = dt.Day;
     }
 
-    private void SetUserAction()
-    {
-        switch (currentActionState)
-        {
-            case ActionState.none:
-                break;
-
-            case ActionState.cultivate:
-                Debug.Log("afdfd");
-                break;
-
-            case ActionState.use_item:
-                break;
-        }
-    }
-
     private void OnClickConstruction()
     {
         if (Input.GetMouseButtonUp(0))
@@ -286,23 +254,6 @@ public class GameManager : MonoBehaviour
                 else if(hit.collider.gameObject == Storage)
                 {
 
-                }
-            }
-        }
-    }
-
-    private void Cultivation()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
-
-            if (hit.collider != null)
-            {
-                if (hit.collider.gameObject == Field)
-                {
-                    Debug.Log("밭");
                 }
             }
         }

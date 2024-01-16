@@ -48,6 +48,12 @@ public class UIManager : MonoBehaviour
 
             case "shop":
                 break;
+
+            case "seed1":
+                break;
+
+            case "seed2":
+                break;
         }
     }
 
