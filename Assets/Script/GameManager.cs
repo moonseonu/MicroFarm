@@ -100,6 +100,9 @@ public class GameManager : MonoBehaviour
         Inventory.Add("promoter", 0);
         Inventory.Add("nutrients", 0);
         Inventory.Add("Rertilizer", 0);
+        Inventory.Add("lettuce seed", 0);
+        Inventory.Add("spinach seed", 0);
+        Inventory.Add("garlic seed", 0);
 
         AuctionPrice.Add("lettuce", 0);
         AuctionPrice.Add("spinach", 0);
@@ -113,6 +116,7 @@ public class GameManager : MonoBehaviour
     {
         OnClickConstruction();
         InstanceField();
+        InventoryManager();
     }
 
     private void SceneManager()
@@ -202,7 +206,7 @@ public class GameManager : MonoBehaviour
         CropsLevel[name] += 1;
     }
 
-    private void AddInventory(string name)
+    public void AddInventory(string name)
     {
         Inventory[name] += 1;
     }
@@ -255,6 +259,31 @@ public class GameManager : MonoBehaviour
                 {
 
                 }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 인벤토리에 각 key값의 아이템이 1개라도 들어온다면 인벤토리에 인스턴스 시키는 형식으로 함.
+    /// </summary>
+    private void InventoryManager()
+    {
+        foreach(var item in Inventory)
+        {
+            if(item.Value == 0)
+            {
+
+            }
+        }
+    }
+
+    public void InstanceInventoryItem()
+    {
+        foreach (var item in Inventory)
+        {
+            if (item.Value == 0)
+            {
+                Debug.Log(item.Value + item.Key);
             }
         }
     }

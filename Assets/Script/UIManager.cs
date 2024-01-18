@@ -27,10 +27,19 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TMP_Text Money_Text;
     [SerializeField] private TMP_Text UserName_Text;
+
+    /// <summary>
+    /// 0~2 : æ∆¿Ã≈€
+    /// 3~5 : æææ—
+    /// </summary>
+    public bool[] isUsed = new bool[6];
     // Start is called before the first frame update
     void Start()
     {
-        PrintInfo();
+        for(int i = 0; i < isUsed.Length; i++)
+        {
+            isUsed[i] = false;
+        }
     }
 
     // Update is called once per frame
@@ -43,7 +52,13 @@ public class UIManager : MonoBehaviour
     {
         switch(name)
         {
-            case "bag":
+            case "bag close":
+                isUsed[3] = true;
+                GameManager.instance.UseItem = true;
+                GameManager.instance.InstanceInventoryItem();
+                break;
+
+            case "bag open":
                 break;
 
             case "shop":

@@ -5,16 +5,17 @@ using UnityEngine;
 public class FieldManager : MonoBehaviour
 {
     public string State;
+    UIManager ui;
     // Start is called before the first frame update
     void Start()
     {
-        
+        ui = GameObject.Find("GameManager").GetComponent<UIManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Cultivation();
+        Cultivation();
     }
 
     public void Cultivation()
@@ -30,7 +31,13 @@ public class FieldManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == gameObject)
                     {
-                        Debug.Log("¹ç");
+                        for (int i = 0; i < 6; i++)
+                        {
+                            if (ui.isUsed[i])
+                            {
+                                Debug.Log("½É¾ú´Ù");
+                            }
+                        }
                     }
                 }
             }
