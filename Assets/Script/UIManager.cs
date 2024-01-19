@@ -31,6 +31,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject Bag_Close;
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
+    [SerializeField] private GameObject Empty_Slot;
 
     /// <summary>
     /// 0~2 : æ∆¿Ã≈€
@@ -96,19 +97,27 @@ public class UIManager : MonoBehaviour
     private void InventoryManager()
     {
         Dictionary<string, int> inven = GameManager.instance.GetInventory();
-        GameObject item = null;
+        GameObject[] item = new GameObject[6];
+        int i = 0;
         foreach (string key in inven.Keys)
         {
             if (inven[key] != 0)
             {
-                if(key == "lettuce seed")
+                if (key == "lettuce seed")
                 {
-                    item = GameManager.instance.InstanceInven("lettuce seed");
-
-                    GameObject temp = Instantiate(item);
+                    item[i] = GameManager.instance.InstanceInven("lettuce seed");
+                    GameObject temp = Instantiate(item[i]);
                     temp.transform.parent = Bag_Open.transform;
-                    temp.transform.localPosition = Vector3.zero;
+                    i++;
                 }
+            }
+
+            else
+            {
+                item[i] = Empty_Slot;
+                GameObject temp = Instantiate(item[i]);
+                temp.transform.parent = Bag_Open.transform;
+                i++;
             }
         }
     }
