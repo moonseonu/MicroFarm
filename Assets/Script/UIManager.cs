@@ -28,6 +28,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text Money_Text;
     [SerializeField] private TMP_Text UserName_Text;
 
+    [SerializeField] private GameObject Bag_Close;
+    [SerializeField] private GameObject Bag_Open;
+    [SerializeField] private GameObject Shop;
+
     /// <summary>
     /// 0~2 : æ∆¿Ã≈€
     /// 3~5 : æææ—
@@ -46,6 +50,7 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         PrintInfo();
+        //AddToggleGroup();
     }
 
     public void ButtonEvent(string name)
@@ -53,18 +58,23 @@ public class UIManager : MonoBehaviour
         switch(name)
         {
             case "bag close":
-                isUsed[3] = true;
-                GameManager.instance.UseItem = true;
-                GameManager.instance.InstanceInventoryItem();
+                Bag_Close.SetActive(false);
+                Bag_Open.SetActive(true);
+                InventoryManager();
                 break;
 
             case "bag open":
+                Bag_Close.SetActive(true);
+                Bag_Open.SetActive(false);
                 break;
 
             case "shop":
                 break;
 
             case "seed1":
+                isUsed[3] = true;
+                GameManager.instance.UseItem = true;
+                GameManager.instance.InstanceInventoryItem();
                 break;
 
             case "seed2":
@@ -76,5 +86,30 @@ public class UIManager : MonoBehaviour
     {
         UserName_Text.text = ui.Name;
         Money_Text.text = ui.Money.ToString();
+    }
+
+    private void IsValueZero()
+    {
+        Dictionary<string, int> inven = GameManager.instance.GetInventory();
+        
+    }
+    private void InventoryManager()
+    {
+        Dictionary<string, int> inven = GameManager.instance.GetInventory();
+        GameObject item = null;
+        foreach (string key in inven.Keys)
+        {
+            if (inven[key] != 0)
+            {
+                if(key == "lettuce seed")
+                {
+                    item = GameManager.instance.InstanceInven("lettuce seed");
+
+                    GameObject temp = Instantiate(item);
+                    temp.transform.parent = Bag_Open.transform;
+                    temp.transform.localPosition = Vector3.zero;
+                }
+            }
+        }
     }
 }

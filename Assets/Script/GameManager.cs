@@ -70,6 +70,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
 
+    public Dictionary<string, int> GetInventory()
+    {
+        return new Dictionary<string, int>(Inventory);
+    }
 
     [SerializeField] private float onehour = 3600;
     [SerializeField] private float currentTime;
@@ -100,7 +104,7 @@ public class GameManager : MonoBehaviour
         Inventory.Add("promoter", 0);
         Inventory.Add("nutrients", 0);
         Inventory.Add("Rertilizer", 0);
-        Inventory.Add("lettuce seed", 0);
+        Inventory.Add("lettuce seed", 1);
         Inventory.Add("spinach seed", 0);
         Inventory.Add("garlic seed", 0);
 
@@ -285,6 +289,18 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log(item.Value + item.Key);
             }
+        }
+    }
+
+    public GameObject InstanceInven(string name)
+    {
+        switch (name)
+        {
+            case "lettuce seed":
+                return Seed_Lt;
+
+            default:
+                return null;
         }
     }
 }
