@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject Seed_Lt;
     [SerializeField] private GameObject Seed_Sp;
     [SerializeField] private GameObject Seed_Gl;
+    [SerializeField] private GameObject Empty_Slot;
 
     [SerializeField] private GameObject Field;
 
@@ -56,6 +57,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int gameMoney;
     [SerializeField] private bool useItem;
+    public string usedName;
     public bool UseItem
     {
         get { return useItem; }
@@ -69,11 +71,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Dictionary<string, int>CropsLevel = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
-
-    public Dictionary<string, int> GetInventory()
-    {
-        return new Dictionary<string, int>(Inventory);
-    }
 
     [SerializeField] private float onehour = 3600;
     [SerializeField] private float currentTime;
@@ -144,7 +141,6 @@ public class GameManager : MonoBehaviour
         {
             string jsonData = File.ReadAllText(filePath);
             data = JsonUtility.FromJson<Data>(jsonData);
-            Debug.Log(data.startday);
         }
         else
         {
@@ -274,33 +270,23 @@ public class GameManager : MonoBehaviour
     {
         foreach(var item in Inventory)
         {
-            if(item.Value == 0)
+            if(item.Value != 0)
             {
-
+                switch (item.Key)
+                {
+                    case "lettuce seed":
+                        ui.AddInvenList(Seed_Lt);
+                        break;
+                }
             }
         }
+        ui.isFullList();
     }
 
-    public void InstanceInventoryItem()
+    public void IsUsedItem(GameObject item)
     {
-        foreach (var item in Inventory)
-        {
-            if (item.Value == 0)
-            {
-                Debug.Log(item.Value + item.Key);
-            }
-        }
+        usedName = item.name;
     }
 
-    public GameObject InstanceInven(string name)
-    {
-        switch (name)
-        {
-            case "lettuce seed":
-                return Seed_Lt;
 
-            default:
-                return null;
-        }
-    }
 }

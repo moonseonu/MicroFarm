@@ -31,27 +31,31 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject Bag_Close;
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
-    [SerializeField] private GameObject Empty_Slot;
+    [SerializeField] private List<GameObject> inventory_List;
+    [SerializeField] private List<GameObject> Instanced_Inven;
+    public void AddInvenList(GameObject item)
+    {
+        if(!inventory_List.Contains(item))
+            inventory_List.Insert(0, item);
+    }
+    public void isFullList()
+    {
+        if(inventory_List.Count > 6) 
+        {
+            inventory_List.Remove(inventory_List[5]);
+        }
+    }
 
-    /// <summary>
-    /// 0~2 : 아이템
-    /// 3~5 : 씨앗
-    /// </summary>
-    public bool[] isUsed = new bool[6];
     // Start is called before the first frame update
     void Start()
     {
-        for(int i = 0; i < isUsed.Length; i++)
-        {
-            isUsed[i] = false;
-        }
+
     }
 
     // Update is called once per frame
     void Update()
     {
         PrintInfo();
-        //AddToggleGroup();
     }
 
     public void ButtonEvent(string name)
@@ -61,7 +65,7 @@ public class UIManager : MonoBehaviour
             case "bag close":
                 Bag_Close.SetActive(false);
                 Bag_Open.SetActive(true);
-                InventoryManager();
+                InventoryInstance();
                 break;
 
             case "bag open":
@@ -70,15 +74,6 @@ public class UIManager : MonoBehaviour
                 break;
 
             case "shop":
-                break;
-
-            case "seed1":
-                isUsed[3] = true;
-                GameManager.instance.UseItem = true;
-                GameManager.instance.InstanceInventoryItem();
-                break;
-
-            case "seed2":
                 break;
         }
     }
@@ -89,36 +84,36 @@ public class UIManager : MonoBehaviour
         Money_Text.text = ui.Money.ToString();
     }
 
-    private void IsValueZero()
+    private void InventoryInstance()
     {
-        Dictionary<string, int> inven = GameManager.instance.GetInventory();
-        
-    }
-    private void InventoryManager()
-    {
-        Dictionary<string, int> inven = GameManager.instance.GetInventory();
-        GameObject[] item = new GameObject[6];
-        int i = 0;
-        foreach (string key in inven.Keys)
+        foreach (GameObject item in inventory_List)
         {
-            if (inven[key] != 0)
+            //한번 인스턴스 될 때 6개의 아이템만 인스턴스 되기 때문에 6개 이상이 되면 인스턴스 할 필요가 없음
+            if (Instanced_Inven.Count < 6)
             {
-                if (key == "lettuce seed")
+                GameObject temp = Instantiate(item);
+                temp.transform.parent = GameObject.Find("Bag Open").transform;
+                Instanced_Inven.Add(item);
+                Toggle togle = temp.GetComponent<Toggle>();
+                if(togle != null)
                 {
-                    item[i] = GameManager.instance.InstanceInven("lettuce seed");
-                    GameObject temp = Instantiate(item[i]);
-                    temp.transform.parent = Bag_Open.transform;
-                    i++;
+                    togle.onValueChanged.AddListener((value) => IsUsedItem(value, item));
                 }
             }
+        }
+    }
 
-            else
-            {
-                item[i] = Empty_Slot;
-                GameObject temp = Instantiate(item[i]);
-                temp.transform.parent = Bag_Open.transform;
-                i++;
-            }
+    public void IsUsedItem(bool isUsed, GameObject item)
+    {
+        if (isUsed)
+        {
+            GameManager.instance.UseItem = true;
+            GameManager.instance.IsUsedItem(item);
+        }
+
+        else
+        {
+            GameManager.instance.UseItem= false;
         }
     }
 }

@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class FieldManager : MonoBehaviour
 {
-    public string State;
-    UIManager ui;
+    public string Cult_Name;
     // Start is called before the first frame update
     void Start()
     {
-        ui = GameObject.Find("GameManager").GetComponent<UIManager>();
+
     }
 
     // Update is called once per frame
@@ -31,12 +30,11 @@ public class FieldManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == gameObject)
                     {
-                        for (int i = 0; i < 6; i++)
+                        switch (GameManager.instance.usedName)
                         {
-                            if (ui.isUsed[i])
-                            {
-                                Debug.Log("½É¾ú´Ù");
-                            }
+                            case "Seed_Lt":
+                                Debug.Log("Seed_Lt is cultivated");
+                                break;
                         }
                     }
                 }
