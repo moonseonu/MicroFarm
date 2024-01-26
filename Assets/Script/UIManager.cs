@@ -33,6 +33,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject Shop;
     [SerializeField] private List<GameObject> inventory_List;
     [SerializeField] private List<GameObject> Instanced_Inven;
+
     public void AddInvenList(GameObject item)
     {
         if(!inventory_List.Contains(item))

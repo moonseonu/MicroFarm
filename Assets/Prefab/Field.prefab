@@ -143,3 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6d643dc197235d418f38ecccbfd904c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  time: 0
+  GrowingLettuce1: {fileID: 21300000, guid: f6615006b484b534da6d0c51d8d71400, type: 3}
+  GrowingLettuce2: {fileID: 21300000, guid: 2237d6b5012838d48aa9808410961251, type: 3}
+  GrowingLettuce3: {fileID: 21300000, guid: f80303191a040464d905314107725e76, type: 3}

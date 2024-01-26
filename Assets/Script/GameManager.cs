@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
         AuctionPrice.Add("lettuce", 0);
         AuctionPrice.Add("spinach", 0);
         AuctionPrice.Add("garlic", 0);
+
         init();
         DateSet();
     }
