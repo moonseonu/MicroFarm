@@ -71,6 +71,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Dictionary<string, int>CropsLevel = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
+    [SerializeField] private Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
 
     [SerializeField] private float onehour = 3600;
     [SerializeField] private float currentTime;
@@ -94,21 +95,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CropsLevel.Add("lettuce", 1);
-        CropsLevel.Add("spinach", 1);
-        CropsLevel.Add("garlic", 1);
-
-        Inventory.Add("promoter", 0);
-        Inventory.Add("nutrients", 0);
-        Inventory.Add("Rertilizer", 0);
-        Inventory.Add("lettuce seed", 1);
-        Inventory.Add("spinach seed", 0);
-        Inventory.Add("garlic seed", 0);
-
-        AuctionPrice.Add("lettuce", 0);
-        AuctionPrice.Add("spinach", 0);
-        AuctionPrice.Add("garlic", 0);
-
         init();
         DateSet();
     }
@@ -153,6 +139,25 @@ public class GameManager : MonoBehaviour
         GameMoney = 0;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
+
+        CropsLevel.Add("lettuce", 1);
+        CropsLevel.Add("spinach", 1);
+        CropsLevel.Add("garlic", 1);
+
+        Inventory.Add("promoter", 0);
+        Inventory.Add("nutrients", 0);
+        Inventory.Add("Rertilizer", 0);
+        Inventory.Add("lettuce seed", 1);
+        Inventory.Add("spinach seed", 0);
+        Inventory.Add("garlic seed", 0);
+
+        AuctionPrice.Add("lettuce", 0);
+        AuctionPrice.Add("spinach", 0);
+        AuctionPrice.Add("garlic", 0);
+
+        CropWarehouse.Add("lettuce", 0);
+        CropWarehouse.Add("spinach", 0);
+        CropWarehouse.Add("garlic", 0);
     }
 
     private void InstanceField()
@@ -248,7 +253,7 @@ public class GameManager : MonoBehaviour
             {
                 if (hit.collider.gameObject == Laboratory)
                 {
-                    Debug.Log("¿¬±¸¼Ò");
+
                 }
 
                 else if(hit.collider.gameObject == Fertilizer_Facility)
@@ -287,6 +292,11 @@ public class GameManager : MonoBehaviour
     public void IsUsedItem(GameObject item)
     {
         usedName = item.name;
+    }
+
+    public void HarvestCrops(string name)
+    {
+        CropWarehouse[name] += 1;
     }
 
 

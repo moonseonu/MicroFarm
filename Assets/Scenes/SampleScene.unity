@@ -276,7 +276,13 @@ MonoBehaviour:
   Bag_Close: {fileID: 594440871}
   Bag_Open: {fileID: 837789002}
   Shop: {fileID: 1555404548}
-  inventory_List: []
+  inventory_List:
+  - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
+  - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
+  - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
+  - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
+  - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
+  - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
   Instanced_Inven: []
 --- !u!1 &458600443
 GameObject:
