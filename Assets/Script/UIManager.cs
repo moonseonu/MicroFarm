@@ -28,11 +28,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text Money_Text;
     [SerializeField] private TMP_Text UserName_Text;
 
+    [SerializeField] private GameObject Storage_Inven;
     [SerializeField] private GameObject Bag_Close;
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
+
+    [SerializeField] private GameObject Empty_Slot;
+    [SerializeField] private GameObject Lettuce_Slot;
+
     [SerializeField] private List<GameObject> inventory_List;
     [SerializeField] private List<GameObject> Instanced_Inven;
+    [SerializeField] private List<GameObject> Storage_List;
 
     public void AddInvenList(GameObject item)
     {
@@ -50,13 +56,22 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        UI_Init();
     }
 
     // Update is called once per frame
     void Update()
     {
         PrintInfo();
+    }
+
+    private void UI_Init()
+    {
+        for(int i = 0; i < 50; i++)
+        {
+            GameObject temp = Instantiate(Empty_Slot);
+            temp.transform.parent = Storage_Inven.transform;
+        }
     }
 
     public void ButtonEvent(string name)
@@ -89,7 +104,7 @@ public class UIManager : MonoBehaviour
     {
         foreach (GameObject item in inventory_List)
         {
-            //ÇÑ¹ø ÀÎ½ºÅÏ½º µÉ ¶§ 6°³ÀÇ ¾ÆÀÌÅÛ¸¸ ÀÎ½ºÅÏ½º µÇ±â ¶§¹®¿¡ 6°³ ÀÌ»óÀÌ µÇ¸é ÀÎ½ºÅÏ½º ÇÒ ÇÊ¿ä°¡ ¾øÀ½
+            //í•œë²ˆ ì¸ìŠ¤í„´ìŠ¤ ë  ë•Œ 6ê°œì˜ ì•„ì´í…œë§Œ ì¸ìŠ¤í„´ìŠ¤ ë˜ê¸° ë•Œë¬¸ì— 6ê°œ ì´ìƒì´ ë˜ë©´ ì¸ìŠ¤í„´ìŠ¤ í•  í•„ìš”ê°€ ì—†ìŒ
             if (Instanced_Inven.Count < 6)
             {
                 GameObject temp = Instantiate(item);
@@ -104,6 +119,11 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void StorageInstance()
+    {
+        Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
+    }
+
     public void IsUsedItem(bool isUsed, GameObject item)
     {
         if (isUsed)
@@ -115,6 +135,40 @@ public class UIManager : MonoBehaviour
         else
         {
             GameManager.instance.UseItem= false;
+        }
+    }
+
+    public void AddStorage(string name, int num)
+    {
+        int count = num;
+        GameObject temp = null;
+        switch (name)
+        {
+            case "lettuce":
+                if (!Storage_List.Contains(Lettuce_Slot))
+                {
+                    for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+                    {
+                        if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                        {
+                            temp = Instantiate(Lettuce_Slot);
+                            temp.transform.parent = Storage_Inven.transform.GetChild(0).transform;
+                            TMP_Text text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                            text.text = count.ToString();
+                            Storage_List.Add(temp);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+                    {
+                        TMP_Text text = Lettuce_Slot.transform.Find("Count").GetComponent< TMP_Text>(); 
+                        text.text = count.ToString();
+                    }
+                }
+                break;
         }
     }
 }

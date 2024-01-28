@@ -57,6 +57,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int gameMoney;
     [SerializeField] private bool useItem;
+    [SerializeField] private int storage_Count;
+    public int Storage_Count
+    {
+        get { return storage_Count; }
+        set { storage_Count = value; }
+    }
+
     public string usedName;
     public bool UseItem
     {
@@ -137,6 +144,7 @@ public class GameManager : MonoBehaviour
         }
 
         GameMoney = 0;
+        Storage_Count = 50;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
 
@@ -263,7 +271,7 @@ public class GameManager : MonoBehaviour
 
                 else if(hit.collider.gameObject == Storage)
                 {
-
+                    ui.StorageInstance();
                 }
             }
         }
@@ -297,7 +305,6 @@ public class GameManager : MonoBehaviour
     public void HarvestCrops(string name)
     {
         CropWarehouse[name] += 1;
+        ui.AddStorage(name, CropWarehouse[name]);
     }
-
-
 }
