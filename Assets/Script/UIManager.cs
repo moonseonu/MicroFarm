@@ -23,6 +23,15 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public class Slot
+    {
+        public GameObject item;
+        public int quantity;
+        public TMP_Text quantity_text;
+    }
+
+    private List<Slot> slots = new List<Slot>();
+
     public UserInfo ui = new UserInfo();
 
     [SerializeField] private TMP_Text Money_Text;
@@ -38,7 +47,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private List<GameObject> inventory_List;
     [SerializeField] private List<GameObject> Instanced_Inven;
-    [SerializeField] private List<GameObject> Storage_List;
+    [SerializeField] private Dictionary<GameObject, int> StorageNum = new Dictionary<GameObject, int>();
 
     public void AddInvenList(GameObject item)
     {
@@ -91,6 +100,10 @@ public class UIManager : MonoBehaviour
 
             case "shop":
                 break;
+
+            case "close storage":
+                Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(false);
+                break;
         }
     }
 
@@ -122,6 +135,14 @@ public class UIManager : MonoBehaviour
     public void StorageInstance()
     {
         Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
+        //for(int i = 0; i < StorageNum.Count; i++)
+        //{
+        //    GameObject temp = Storage_Inven.transform.GetChild(i).GetChild(0).gameObject;
+        //    StorageManager sm = temp.GetComponent<StorageManager>();
+        //    TMP_Text text = temp.transform.Find("Count").gameObject.GetComponent<TMP_Text>();
+        //    text.text = StorageNum[Lettuce_Slot].ToString();
+        //}
+
     }
 
     public void IsUsedItem(bool isUsed, GameObject item)
@@ -145,28 +166,30 @@ public class UIManager : MonoBehaviour
         switch (name)
         {
             case "lettuce":
-                if (!Storage_List.Contains(Lettuce_Slot))
+
+                Slot Existslot = slots.Find(Existslot => Existslot.item == Lettuce_Slot && Existslot.quantity < 2);
+                if(Existslot != null)
                 {
+                    Existslot.quantity++;
+                    Existslot.quantity_text.text = Existslot.quantity.ToString();
+                    Debug.Log(Existslot.quantity);
+                }
+                else
+                {
+                    Slot Newslot = new Slot { item = Lettuce_Slot, quantity = 1 };
+                    slots.Add(Newslot);
                     for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                     {
                         if (Storage_Inven.transform.GetChild(i).childCount == 0)
                         {
+                            
                             temp = Instantiate(Lettuce_Slot);
-                            temp.transform.parent = Storage_Inven.transform.GetChild(0).transform;
-                            TMP_Text text = temp.transform.Find("Count").GetComponent<TMP_Text>();
-                            text.text = count.ToString();
-                            Storage_List.Add(temp);
+                            temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
                             break;
                         }
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < GameManager.instance.Storage_Count; i++)
-                    {
-                        TMP_Text text = Lettuce_Slot.transform.Find("Count").GetComponent< TMP_Text>(); 
-                        text.text = count.ToString();
-                    }
+                    Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                    Newslot.quantity_text.text = Newslot.quantity.ToString();
                 }
                 break;
         }
