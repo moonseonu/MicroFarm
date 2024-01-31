@@ -28,9 +28,10 @@ public class UIManager : MonoBehaviour
         public GameObject item;
         public int quantity;
         public TMP_Text quantity_text;
+        public float fresh_time;
     }
 
-    private List<Slot> slots = new List<Slot>();
+    [SerializeField] private List<Slot> slots = new List<Slot>();
 
     public UserInfo ui = new UserInfo();
 
@@ -44,10 +45,10 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private GameObject Empty_Slot;
     [SerializeField] private GameObject Lettuce_Slot;
+    [SerializeField] private GameObject Rotten_Slot;
 
     [SerializeField] private List<GameObject> inventory_List;
     [SerializeField] private List<GameObject> Instanced_Inven;
-    [SerializeField] private Dictionary<GameObject, int> StorageNum = new Dictionary<GameObject, int>();
 
     public void AddInvenList(GameObject item)
     {
@@ -72,6 +73,7 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         PrintInfo();
+        IsFreshSlot();
     }
 
     private void UI_Init()
@@ -135,14 +137,6 @@ public class UIManager : MonoBehaviour
     public void StorageInstance()
     {
         Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
-        //for(int i = 0; i < StorageNum.Count; i++)
-        //{
-        //    GameObject temp = Storage_Inven.transform.GetChild(i).GetChild(0).gameObject;
-        //    StorageManager sm = temp.GetComponent<StorageManager>();
-        //    TMP_Text text = temp.transform.Find("Count").gameObject.GetComponent<TMP_Text>();
-        //    text.text = StorageNum[Lettuce_Slot].ToString();
-        //}
-
     }
 
     public void IsUsedItem(bool isUsed, GameObject item)
@@ -172,7 +166,6 @@ public class UIManager : MonoBehaviour
                 {
                     Existslot.quantity++;
                     Existslot.quantity_text.text = Existslot.quantity.ToString();
-                    Debug.Log(Existslot.quantity);
                 }
                 else
                 {
@@ -192,6 +185,27 @@ public class UIManager : MonoBehaviour
                     Newslot.quantity_text.text = Newslot.quantity.ToString();
                 }
                 break;
+        }
+    }
+
+    private void IsFreshSlot()
+    {
+        for(int i = 0; i <  slots.Count; i++)
+        {
+            if (slots[i].item.name == Lettuce_Slot.name)
+            {
+                slots[i].fresh_time += Time.deltaTime;
+                if (slots[i].fresh_time > 10.0f)
+                {
+                    slots[i].item = Rotten_Slot;
+                    Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
+                    Destroy(slot.gameObject);
+                    GameObject temp = Instantiate(Rotten_Slot);
+                    temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                    slots[i].quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                    slots[i].quantity_text.text = slots[i].quantity.ToString();
+                }
+            }
         }
     }
 }

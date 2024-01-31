@@ -307,10 +307,4 @@ public class GameManager : MonoBehaviour
         CropWarehouse[name] += 1;
         ui.AddStorage(name, CropWarehouse[name]);
     }
-
-    public int CropsNum(string name)
-    {
-        Debug.Log(CropWarehouse[name]);
-        return CropWarehouse[name];
-    }
 }
