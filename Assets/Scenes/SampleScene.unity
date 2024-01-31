@@ -412,6 +412,7 @@ MonoBehaviour:
   Shop: {fileID: 1555404548}
   Empty_Slot: {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
   Lettuce_Slot: {fileID: 6118939772252164936, guid: cd3bd6ee14b7a0c469d21cb50a9efd33, type: 3}
+  Rotten_Slot: {fileID: 4195751295577512194, guid: 23b7f2af7be4c434c823ac20f2aaf887, type: 3}
   inventory_List:
   - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
   - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
@@ -420,7 +421,6 @@ MonoBehaviour:
   - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
   - {fileID: 7359958420603041006, guid: 2ddb5bd4ddcccba45ba7d3c3162d76fc, type: 3}
   Instanced_Inven: []
-  Storage_List: []
 --- !u!1 &392826587
 GameObject:
   m_ObjectHideFlags: 0
