@@ -101,6 +101,7 @@ public class UIManager : MonoBehaviour
                 break;
 
             case "shop":
+                Shop.SetActive(true);
                 break;
 
             case "close storage":
