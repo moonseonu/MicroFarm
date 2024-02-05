@@ -307,4 +307,9 @@ public class GameManager : MonoBehaviour
         CropWarehouse[name] += 1;
         ui.AddStorage(name, CropWarehouse[name]);
     }
+
+    private void Selling()
+    {
+
+    }
 }

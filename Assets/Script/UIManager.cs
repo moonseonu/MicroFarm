@@ -42,6 +42,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject Bag_Close;
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
+    [SerializeField] private GameObject Notice_Board;
 
     [SerializeField] private GameObject Empty_Slot;
     [SerializeField] private GameObject Lettuce_Slot;
@@ -87,7 +88,7 @@ public class UIManager : MonoBehaviour
 
     public void ButtonEvent(string name)
     {
-        switch(name)
+        switch (name)
         {
             case "bag close":
                 Bag_Close.SetActive(false);
@@ -106,6 +107,18 @@ public class UIManager : MonoBehaviour
 
             case "close storage":
                 Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(false);
+                break;
+
+            case "close shop":
+                Shop.SetActive(false);
+                break;
+
+            case "notice board open":
+                Notice_Board.SetActive(true);
+                break;
+
+            case "notice board close":
+                Notice_Board.SetActive(false);
                 break;
         }
     }
@@ -208,5 +221,10 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void SellCrop()
+    {
+
     }
 }
