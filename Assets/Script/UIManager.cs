@@ -120,6 +120,10 @@ public class UIManager : MonoBehaviour
             case "notice board close":
                 Notice_Board.SetActive(false);
                 break;
+
+            case "sell lettuce":
+                SellCrop("lettuce", 1);
+                break;
         }
     }
 
@@ -209,7 +213,7 @@ public class UIManager : MonoBehaviour
             if (slots[i].item.name == Lettuce_Slot.name)
             {
                 slots[i].fresh_time += Time.deltaTime;
-                if (slots[i].fresh_time > 10.0f)
+                if (slots[i].fresh_time > 100000.0f)
                 {
                     slots[i].item = Rotten_Slot;
                     Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
@@ -223,8 +227,41 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void SellCrop()
+    private void SellCrop(string name, int num)
     {
+        switch (name)
+        {
+            case "lettuce":
+                Debug.Log(slots.Count);
+                for(int i = 0; i < slots.Count; i++)
+                {
+                    if (slots[i].item.name == Lettuce_Slot.name)
+                    {
+                        if (slots[i].quantity < num)
+                        {
+                            num -= slots[i].quantity;
+                            slots[i].item = Rotten_Slot;
+                            Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
+                            Destroy(slot.gameObject);
+                            slots.RemoveAt(i);
+                            Debug.Log(slots.Count);
+                        }
 
+                        else
+                        {
+                            slots[i].quantity -= num;
+                            slots[i].quantity_text.text = slots[i].quantity.ToString();
+                            if (slots[i].quantity == 0)
+                            {
+                                Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
+                                Destroy(slot.gameObject);
+                                slots.RemoveAt(i);
+                            }
+                        }
+                    }
+                }
+                GameManager.instance.Selling(name, num);
+                break;
+        }
     }
 }

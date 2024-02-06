@@ -87,7 +87,6 @@ public class GameManager : MonoBehaviour
     DateTime dt = DateTime.Now;
 
     private int[] StartDay = new int[3];        //연,월,일을 저장
-    private int CurrentDay;
 
     private void Awake()
     {
@@ -166,6 +165,12 @@ public class GameManager : MonoBehaviour
         CropWarehouse.Add("lettuce", 0);
         CropWarehouse.Add("spinach", 0);
         CropWarehouse.Add("garlic", 0);
+
+        if(data.currentday != dt.Day)
+        {
+            AuctionPricing();
+            Debug.Log(AuctionPrice["lettuce"]);
+        }
     }
 
     private void InstanceField()
@@ -247,7 +252,7 @@ public class GameManager : MonoBehaviour
         StartDay[0] = dt.Year;
         StartDay[1] = dt.Month;
         StartDay[2] = dt.Day;
-        CurrentDay = dt.Day;
+        data.currentday = dt.Day;
     }
 
     private void OnClickConstruction()
@@ -308,8 +313,11 @@ public class GameManager : MonoBehaviour
         ui.AddStorage(name, CropWarehouse[name]);
     }
 
-    private void Selling()
+    public void Selling(string name, int num)
     {
-
+        CropWarehouse[name] -= num;
+        GameMoney += num * AuctionPrice[name];
+        ui.ui.Money = GameMoney;
+        Debug.Log(GameMoney);
     }
 }
