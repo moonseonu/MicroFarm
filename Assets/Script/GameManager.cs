@@ -111,7 +111,6 @@ public class GameManager : MonoBehaviour
     {
         OnClickConstruction();
         InstanceField();
-        InventoryManager();
     }
 
     private void SceneManager()
@@ -231,11 +230,18 @@ public class GameManager : MonoBehaviour
     public void AddInventory(string name)
     {
         Inventory[name] += 1;
+        InventoryManager();
     }
 
     public void UseInventory(string name)
     {
         Inventory[name] -= 1;
+    }
+
+    public int Inventory_Count(string name)
+    {
+        Debug.Log(Inventory[name]);
+        return Inventory[name];
     }
 
     public int[] Timer()
@@ -297,21 +303,11 @@ public class GameManager : MonoBehaviour
     {
         foreach(var item in Inventory)
         {
-            if(item.Value != 0)
+            if (item.Key == "lettuce")
             {
-                switch (item.Key)
-                {
-                    case "lettuce":
-                        ui.AddInvenList(Seed_Lt);
-                        if (Inventory["lettuce"] == 0)
-                        {
-                            ui.UseInvenList(Seed_Lt);
-                        }
-                        break;
-                }
+                ui.AddInventory(Seed_Lt, item.Value);
             }
         }
-        ui.isFullList();
     }
 
     public void IsUsedItem(GameObject item)

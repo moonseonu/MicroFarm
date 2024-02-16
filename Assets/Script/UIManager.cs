@@ -31,7 +31,16 @@ public class UIManager : MonoBehaviour
         public float fresh_time;
     }
 
+    public class Inventory
+    {
+        public GameObject item;
+        public int quantity;
+        public TMP_Text quantity_text;
+        public Toggle toggle;
+    }
+
     [SerializeField] private List<Slot> slots = new List<Slot>();
+    [SerializeField] private List<Inventory> inventorys = new List<Inventory>();
 
     public UserInfo ui = new UserInfo();
 
@@ -39,7 +48,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text UserName_Text;
 
     [SerializeField] private GameObject Storage_Inven;
-    [SerializeField] private GameObject Bag_Close;
+    [SerializeField] private GameObject Bag_Content;
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
     [SerializeField] private GameObject Notice_Board;
@@ -48,18 +57,31 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject Lettuce_Slot;
     [SerializeField] private GameObject Rotten_Slot;
 
+    [SerializeField] private Dictionary<string, GameObject> StorageSlot = new Dictionary<string, GameObject>();
+
     [SerializeField] private List<GameObject> inventory_List;
     [SerializeField] private List<GameObject> Instanced_Inven;
 
-    public void AddInvenList(GameObject item)
+    public void AddInvenList(GameObject item, int num)
     {
-        if(!inventory_List.Contains(item))
+        if (!inventory_List.Contains(item))
+        {
             inventory_List.Insert(0, item);
+            TMP_Text item_Count = item.transform.Find("Count").GetComponent<TMP_Text>();
+            item_Count.text = num.ToString();
+        }
     }
 
-    public void UseInvenList(GameObject item)
+    public void RemoveInvenList(GameObject item)
     {
-        inventory_List.Remove(item);
+        if (inventory_List.Contains(item))
+        {
+            int index = inventory_List.IndexOf(item);
+            inventory_List[index] = Empty_Slot;
+            GameObject temp = Instanced_Inven[index];
+            Destroy(temp);
+            Instanced_Inven.Remove(item);
+        }
     }
     public void isFullList()
     {
@@ -80,15 +102,28 @@ public class UIManager : MonoBehaviour
     {
         PrintInfo();
         IsFreshSlot();
+        //InventoryInstance();
     }
 
     private void UI_Init()
     {
+        GameObject temp = null;
+        //창고 인벤토리
         for(int i = 0; i < 50; i++)
         {
-            GameObject temp = Instantiate(Empty_Slot);
+            temp = Instantiate(Empty_Slot);
             temp.transform.parent = Storage_Inven.transform;
         }
+
+        //가방 인벤토리
+        for(int i = 0; i < 6; i++)
+        {
+            temp = Instantiate(Empty_Slot);
+            temp.transform.parent = Bag_Content.transform;
+        }
+
+        StorageSlot.Add("lettuce", Lettuce_Slot);
+        StorageSlot.Add("rotten", Rotten_Slot);
     }
 
     public void ButtonEvent(string name)
@@ -96,14 +131,11 @@ public class UIManager : MonoBehaviour
         switch (name)
         {
             case "bag close":
-                Bag_Close.SetActive(false);
-                Bag_Open.SetActive(true);
-                InventoryInstance();
+                Bag_Content.SetActive(false);
                 break;
 
-            case "bag open":
-                Bag_Close.SetActive(true);
-                Bag_Open.SetActive(false);
+            case "bag":
+                Bag_Content.SetActive(true);
                 break;
 
             case "shop":
@@ -142,25 +174,6 @@ public class UIManager : MonoBehaviour
         Money_Text.text = ui.Money.ToString();
     }
 
-    private void InventoryInstance()
-    {
-        foreach (GameObject item in inventory_List)
-        {
-            //한번 인스턴스 될 때 6개의 아이템만 인스턴스 되기 때문에 6개 이상이 되면 인스턴스 할 필요가 없음
-            if (Instanced_Inven.Count < 6)
-            {
-                GameObject temp = Instantiate(item);
-                temp.transform.parent = GameObject.Find("Bag Open").transform;
-                Instanced_Inven.Add(item);
-                Toggle togle = temp.GetComponent<Toggle>();
-                if(togle != null)
-                {
-                    togle.onValueChanged.AddListener((value) => IsUsedItem(value, item));
-                }
-            }
-        }
-    }
-
     public void StorageInstance()
     {
         Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
@@ -182,13 +195,12 @@ public class UIManager : MonoBehaviour
 
     public void AddStorage(string name, int num)
     {
-        int count = num;
         GameObject temp = null;
         switch (name)
         {
             case "lettuce":
 
-                Slot Existslot = slots.Find(Existslot => Existslot.item == Lettuce_Slot && Existslot.quantity < 2);
+                Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity < 2);
                 if(Existslot != null)
                 {
                     Existslot.quantity++;
@@ -196,14 +208,14 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    Slot Newslot = new Slot { item = Lettuce_Slot, quantity = 1 };
+                    Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
                     slots.Add(Newslot);
                     for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                     {
                         if (Storage_Inven.transform.GetChild(i).childCount == 0)
                         {
                             
-                            temp = Instantiate(Lettuce_Slot);
+                            temp = Instantiate(StorageSlot[name]);
                             temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
                             break;
                         }
@@ -212,6 +224,40 @@ public class UIManager : MonoBehaviour
                     Newslot.quantity_text.text = Newslot.quantity.ToString();
                 }
                 break;
+        }
+    }
+
+    public void AddInventory(GameObject item, int num)
+    {
+        GameObject temp = null;
+
+        Inventory Existinven = inventorys.Find(Existinven => item);
+        if (Existinven != null)
+        {
+            Existinven.quantity++;
+            Existinven.quantity_text.text = Existinven.quantity.ToString();
+        }
+        else
+        {
+            Inventory Newinven = new Inventory { item = item, quantity = 1 };
+            inventorys.Add(Newinven);
+            for (int i = 0; i < 6; i++)
+            {
+                if (Bag_Content.transform.GetChild(i).childCount == 0)
+                {
+
+                    temp = Instantiate(item);
+                    temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
+                    break;
+                }
+            }
+            Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+            Newinven.quantity_text.text = Newinven.quantity.ToString();
+            Newinven.toggle = Newinven.item.GetComponent<Toggle>();
+            if (Newinven.toggle != null)
+            {
+                Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
+            }
         }
     }
 
@@ -244,7 +290,7 @@ public class UIManager : MonoBehaviour
                 Debug.Log(slots.Count);
                 for(int i = 0; i < slots.Count; i++)
                 {
-                    if (slots[i].item.name == Lettuce_Slot.name)
+                    if (slots[i].item.name == StorageSlot[name].name)
                     {
                         if (slots[i].quantity < num)
                         {

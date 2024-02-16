@@ -52,10 +52,15 @@ public class FieldManager : MonoBehaviour
                         switch (GameManager.instance.usedName)
                         {
                             case "Seed_Lt":
-                                Lettuce.SetActive(true);
-                                Sr = Lettuce.GetComponent<SpriteRenderer>();
-                                Growth_Type["lettuce"] = true;
-                                GameManager.instance.UseInventory("lettuce");
+                                Debug.Log("fdadf");
+                                if (GameManager.instance.Inventory_Count("lettuce") != 0)
+                                {
+                                    Lettuce.SetActive(true);
+                                    Sr = Lettuce.GetComponent<SpriteRenderer>();
+                                    if (!isHarvest && !Growth_Type["lettuce"])
+                                        GameManager.instance.UseInventory("lettuce");
+                                    Growth_Type["lettuce"] = true;
+                                }
                                 break;
                         }
                     }
