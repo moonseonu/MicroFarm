@@ -55,6 +55,7 @@ public class FieldManager : MonoBehaviour
                                 Lettuce.SetActive(true);
                                 Sr = Lettuce.GetComponent<SpriteRenderer>();
                                 Growth_Type["lettuce"] = true;
+                                GameManager.instance.UseInventory("lettuce");
                                 break;
                         }
                     }

@@ -56,6 +56,11 @@ public class UIManager : MonoBehaviour
         if(!inventory_List.Contains(item))
             inventory_List.Insert(0, item);
     }
+
+    public void UseInvenList(GameObject item)
+    {
+        inventory_List.Remove(item);
+    }
     public void isFullList()
     {
         if(inventory_List.Count > 6) 
@@ -111,6 +116,10 @@ public class UIManager : MonoBehaviour
 
             case "close shop":
                 Shop.SetActive(false);
+                break;
+
+            case "buy lettuce":
+                GameManager.instance.Buying("lettuce", 1);
                 break;
 
             case "notice board open":

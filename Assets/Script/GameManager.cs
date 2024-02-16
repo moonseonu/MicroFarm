@@ -78,6 +78,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Dictionary<string, int>CropsLevel = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
+    [SerializeField] private Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
     [SerializeField] private Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
 
     [SerializeField] private float onehour = 3600;
@@ -142,7 +143,7 @@ public class GameManager : MonoBehaviour
             File.WriteAllText(filePath, saveData);
         }
 
-        GameMoney = 0;
+        GameMoney = 100;
         Storage_Count = 50;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
@@ -154,13 +155,15 @@ public class GameManager : MonoBehaviour
         Inventory.Add("promoter", 0);
         Inventory.Add("nutrients", 0);
         Inventory.Add("Rertilizer", 0);
-        Inventory.Add("lettuce seed", 1);
-        Inventory.Add("spinach seed", 0);
-        Inventory.Add("garlic seed", 0);
+        Inventory.Add("lettuce", 1);
+        Inventory.Add("spinach", 0);
+        Inventory.Add("garlic", 0);
 
         AuctionPrice.Add("lettuce", 0);
         AuctionPrice.Add("spinach", 0);
         AuctionPrice.Add("garlic", 0);
+
+        SeedPrice.Add("lettuce", 10);
 
         CropWarehouse.Add("lettuce", 0);
         CropWarehouse.Add("spinach", 0);
@@ -230,6 +233,11 @@ public class GameManager : MonoBehaviour
         Inventory[name] += 1;
     }
 
+    public void UseInventory(string name)
+    {
+        Inventory[name] -= 1;
+    }
+
     public int[] Timer()
     {
         currentTime += Time.deltaTime;
@@ -293,8 +301,12 @@ public class GameManager : MonoBehaviour
             {
                 switch (item.Key)
                 {
-                    case "lettuce seed":
+                    case "lettuce":
                         ui.AddInvenList(Seed_Lt);
+                        if (Inventory["lettuce"] == 0)
+                        {
+                            ui.UseInvenList(Seed_Lt);
+                        }
                         break;
                 }
             }
@@ -319,5 +331,12 @@ public class GameManager : MonoBehaviour
         GameMoney += num * AuctionPrice[name];
         ui.ui.Money = GameMoney;
         Debug.Log(GameMoney);
+    }
+
+    public void Buying(string name, int num)
+    {
+        AddInventory(name);
+        GameMoney -= num * SeedPrice[name];
+        ui.ui.Money = GameMoney;
     }
 }
