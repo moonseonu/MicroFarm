@@ -154,7 +154,7 @@ public class GameManager : MonoBehaviour
         Inventory.Add("promoter", 0);
         Inventory.Add("nutrients", 0);
         Inventory.Add("Rertilizer", 0);
-        Inventory.Add("lettuce", 1);
+        Inventory.Add("lettuce", 0);
         Inventory.Add("spinach", 0);
         Inventory.Add("garlic", 0);
 
@@ -236,11 +236,11 @@ public class GameManager : MonoBehaviour
     public void UseInventory(string name)
     {
         Inventory[name] -= 1;
+        ui.UseItem(name, 1);
     }
 
     public int Inventory_Count(string name)
     {
-        Debug.Log(Inventory[name]);
         return Inventory[name];
     }
 

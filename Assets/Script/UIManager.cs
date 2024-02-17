@@ -60,36 +60,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Dictionary<string, GameObject> StorageSlot = new Dictionary<string, GameObject>();
 
     [SerializeField] private List<GameObject> inventory_List;
-    [SerializeField] private List<GameObject> Instanced_Inven;
-
-    public void AddInvenList(GameObject item, int num)
-    {
-        if (!inventory_List.Contains(item))
-        {
-            inventory_List.Insert(0, item);
-            TMP_Text item_Count = item.transform.Find("Count").GetComponent<TMP_Text>();
-            item_Count.text = num.ToString();
-        }
-    }
-
-    public void RemoveInvenList(GameObject item)
-    {
-        if (inventory_List.Contains(item))
-        {
-            int index = inventory_List.IndexOf(item);
-            inventory_List[index] = Empty_Slot;
-            GameObject temp = Instanced_Inven[index];
-            Destroy(temp);
-            Instanced_Inven.Remove(item);
-        }
-    }
-    public void isFullList()
-    {
-        if(inventory_List.Count > 6) 
-        {
-            inventory_List.Remove(inventory_List[5]);
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -102,7 +72,6 @@ public class UIManager : MonoBehaviour
     {
         PrintInfo();
         IsFreshSlot();
-        //InventoryInstance();
     }
 
     private void UI_Init()
@@ -241,6 +210,8 @@ public class UIManager : MonoBehaviour
         {
             Inventory Newinven = new Inventory { item = item, quantity = 1 };
             inventorys.Add(Newinven);
+            if(!inventory_List.Contains(item))
+                inventory_List.Add(item);
             for (int i = 0; i < 6; i++)
             {
                 if (Bag_Content.transform.GetChild(i).childCount == 0)
@@ -253,7 +224,8 @@ public class UIManager : MonoBehaviour
             }
             Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
             Newinven.quantity_text.text = Newinven.quantity.ToString();
-            Newinven.toggle = Newinven.item.GetComponent<Toggle>();
+
+            Newinven.toggle = temp.GetComponent<Toggle>();
             if (Newinven.toggle != null)
             {
                 Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
@@ -282,6 +254,36 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void UseItem(string name, int num)
+    {
+        for(int i = 0; i < inventorys.Count; i++)
+        {
+            for(int j = 0; j < inventory_List.Count; j++)
+            {
+                if (inventorys[i].item.name == inventory_List[j].name)
+                {
+                    if (inventorys[i].quantity <= num)
+                    {
+                        Transform removeitem = Bag_Content.transform.GetChild(i+1).GetChild(0);
+                        Destroy(removeitem.gameObject);
+                        inventorys.RemoveAt(i);
+                    }
+                    else
+                    {
+                        inventorys[i].quantity -= num;
+                        inventorys[i].quantity_text.text = inventorys[i].quantity.ToString();
+                        if (inventorys[i].quantity == 0)
+                        {
+                            Transform removeitem = Bag_Content.transform.GetChild(i+1).GetChild(0);
+                            Destroy(removeitem.gameObject);
+                            inventorys.RemoveAt(i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void SellCrop(string name, int num)
     {
         switch (name)
@@ -299,7 +301,6 @@ public class UIManager : MonoBehaviour
                             Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
                             Destroy(slot.gameObject);
                             slots.RemoveAt(i);
-                            Debug.Log(slots.Count);
                         }
 
                         else

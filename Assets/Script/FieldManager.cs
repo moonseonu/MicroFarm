@@ -52,7 +52,6 @@ public class FieldManager : MonoBehaviour
                         switch (GameManager.instance.usedName)
                         {
                             case "Seed_Lt":
-                                Debug.Log("fdadf");
                                 if (GameManager.instance.Inventory_Count("lettuce") != 0)
                                 {
                                     Lettuce.SetActive(true);
