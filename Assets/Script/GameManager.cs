@@ -22,6 +22,12 @@ public class GameManager : MonoBehaviour
         public int money;
         public int startday;
         public int currentday;
+
+        public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
+        public Dictionary<string, int> Inventory = new Dictionary<string, int>();
+        public Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
+        public Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
+        public Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
     }
     Data data;
     string dataFileName = "data.json";
@@ -75,11 +81,11 @@ public class GameManager : MonoBehaviour
         get { return gameMoney; }
         set { gameMoney = value; }
     }
-    [SerializeField] private Dictionary<string, int>CropsLevel = new Dictionary<string, int>();
-    [SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
-    [SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
-    [SerializeField] private Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
-    [SerializeField] private Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
+    //[SerializeField] private Dictionary<string, int>CropsLevel = new Dictionary<string, int>();
+    //[SerializeField] private Dictionary<string, int>Inventory = new Dictionary<string, int>();
+    //[SerializeField] private Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
+    //[SerializeField] private Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
+    //[SerializeField] private Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
 
     [SerializeField] private float onehour = 3600;
     [SerializeField] private float currentTime;
@@ -111,6 +117,7 @@ public class GameManager : MonoBehaviour
     {
         OnClickConstruction();
         InstanceField();
+        SaveData();
     }
 
     private void SceneManager()
@@ -140,39 +147,70 @@ public class GameManager : MonoBehaviour
             string saveData = JsonUtility.ToJson(data, true);
             filePath = Application.persistentDataPath + "/userdata.json";
             File.WriteAllText(filePath, saveData);
+
+            data.CropsLevel.Add("lettuce", 1);
+            data.CropsLevel.Add("spinach", 1);
+            data.CropsLevel.Add("garlic", 1);
+
+            data.Inventory.Add("promoter", 0);
+            data.Inventory.Add("nutrients", 0);
+            data.Inventory.Add("Rertilizer", 0);
+            data.Inventory.Add("lettuce", 0);
+            data.Inventory.Add("spinach", 0);
+            data.Inventory.Add("garlic", 0);
+
+            data.AuctionPrice.Add("lettuce", 0);
+            data.AuctionPrice.Add("spinach", 0);
+            data.AuctionPrice.Add("garlic", 0);
+
+            data.SeedPrice.Add("lettuce", 10);
+
+            data.CropWarehouse.Add("lettuce", 0);
+            data.CropWarehouse.Add("spinach", 0);
+            data.CropWarehouse.Add("garlic", 0);
         }
 
-        GameMoney = 100;
+        GameMoney = data.money;
         Storage_Count = 50;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
 
-        CropsLevel.Add("lettuce", 1);
-        CropsLevel.Add("spinach", 1);
-        CropsLevel.Add("garlic", 1);
+        //CropsLevel.Add("lettuce", 1);
+        //CropsLevel.Add("spinach", 1);
+        //CropsLevel.Add("garlic", 1);
 
-        Inventory.Add("promoter", 0);
-        Inventory.Add("nutrients", 0);
-        Inventory.Add("Rertilizer", 0);
-        Inventory.Add("lettuce", 0);
-        Inventory.Add("spinach", 0);
-        Inventory.Add("garlic", 0);
+        //Inventory.Add("promoter", 0);
+        //Inventory.Add("nutrients", 0);
+        //Inventory.Add("Rertilizer", 0);
+        //Inventory.Add("lettuce", 0);
+        //Inventory.Add("spinach", 0);
+        //Inventory.Add("garlic", 0);
 
-        AuctionPrice.Add("lettuce", 0);
-        AuctionPrice.Add("spinach", 0);
-        AuctionPrice.Add("garlic", 0);
+        //AuctionPrice.Add("lettuce", 0);
+        //AuctionPrice.Add("spinach", 0);
+        //AuctionPrice.Add("garlic", 0);
 
-        SeedPrice.Add("lettuce", 10);
+        //SeedPrice.Add("lettuce", 10);
 
-        CropWarehouse.Add("lettuce", 0);
-        CropWarehouse.Add("spinach", 0);
-        CropWarehouse.Add("garlic", 0);
+        //CropWarehouse.Add("lettuce", 0);
+        //CropWarehouse.Add("spinach", 0);
+        //CropWarehouse.Add("garlic", 0);
 
         if(data.currentday != dt.Day)
         {
             AuctionPricing();
-            Debug.Log(AuctionPrice["lettuce"]);
+            Debug.Log(data.AuctionPrice["lettuce"]);
         }
+    }
+
+    private void SaveData()
+    {
+        data.money = GameMoney;
+        data.currentday = dt.Day;
+
+        string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
+        string saveData = JsonUtility.ToJson(data, true);
+        File.WriteAllText(filePath, saveData);
     }
 
     private void InstanceField()
@@ -212,9 +250,9 @@ public class GameManager : MonoBehaviour
 
     private void AuctionPricing()
     {
-        AuctionPrice["lettuce"] = UnityEngine.Random.Range(30, 150);
-        AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
-        AuctionPrice["garlic"] = UnityEngine.Random.Range(500, 2500);
+        data.AuctionPrice["lettuce"] = UnityEngine.Random.Range(30, 150);
+        data.AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
+        data.AuctionPrice["garlic"] = UnityEngine.Random.Range(500, 2500);
     }
 
     private void TakeMoney(int money)
@@ -224,24 +262,24 @@ public class GameManager : MonoBehaviour
 
     private void CropsLevelUp(string name)
     {
-        CropsLevel[name] += 1;
+        data.CropsLevel[name] += 1;
     }
 
     public void AddInventory(string name)
     {
-        Inventory[name] += 1;
+        data.Inventory[name] += 1;
         InventoryManager();
     }
 
     public void UseInventory(string name)
     {
-        Inventory[name] -= 1;
+        data.Inventory[name] -= 1;
         ui.UseItem(name, 1);
     }
 
     public int Inventory_Count(string name)
     {
-        return Inventory[name];
+        return data.Inventory[name];
     }
 
     public int[] Timer()
@@ -301,7 +339,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void InventoryManager()
     {
-        foreach(var item in Inventory)
+        foreach(var item in data.Inventory)
         {
             if (item.Key == "lettuce")
             {
@@ -317,14 +355,14 @@ public class GameManager : MonoBehaviour
 
     public void HarvestCrops(string name)
     {
-        CropWarehouse[name] += 1;
-        ui.AddStorage(name, CropWarehouse[name]);
+        data.CropWarehouse[name] += 1;
+        ui.AddStorage(name, data.CropWarehouse[name]);
     }
 
     public void Selling(string name, int num)
     {
-        CropWarehouse[name] -= num;
-        GameMoney += num * AuctionPrice[name];
+        data.CropWarehouse[name] -= num;
+        GameMoney += num * data.AuctionPrice[name];
         ui.ui.Money = GameMoney;
         Debug.Log(GameMoney);
     }
@@ -332,7 +370,7 @@ public class GameManager : MonoBehaviour
     public void Buying(string name, int num)
     {
         AddInventory(name);
-        GameMoney -= num * SeedPrice[name];
+        GameMoney -= num * data.SeedPrice[name];
         ui.ui.Money = GameMoney;
     }
 }
