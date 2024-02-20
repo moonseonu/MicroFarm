@@ -64,7 +64,7 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UI_Init();
+
     }
 
     // Update is called once per frame
@@ -74,7 +74,7 @@ public class UIManager : MonoBehaviour
         IsFreshSlot();
     }
 
-    private void UI_Init()
+    public void UI_Init()
     {
         GameObject temp = null;
         //창고 인벤토리
@@ -162,7 +162,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void AddStorage(string name, int num)
+    public void AddStorage(string name, int num, bool isInit)
     {
         GameObject temp = null;
         switch (name)
@@ -177,26 +177,47 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
-                    slots.Add(Newslot);
-                    for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+                    if (!isInit)
                     {
-                        if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
+                        slots.Add(Newslot);
+                        for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                         {
-                            
-                            temp = Instantiate(StorageSlot[name]);
-                            temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
-                            break;
+                            if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                            {
+
+                                temp = Instantiate(StorageSlot[name]);
+                                temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                                break;
+                            }
                         }
+                        Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                        Newslot.quantity_text.text = Newslot.quantity.ToString();
                     }
-                    Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
-                    Newslot.quantity_text.text = Newslot.quantity.ToString();
+
+                    else
+                    {
+                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
+                        slots.Add(Newslot);
+                        for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+                        {
+                            if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                            {
+
+                                temp = Instantiate(StorageSlot[name]);
+                                temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                                break;
+                            }
+                        }
+                        Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                        Newslot.quantity_text.text = Newslot.quantity.ToString();
+                    }
                 }
                 break;
         }
     }
 
-    public void AddInventory(GameObject item, int num)
+    public void AddInventory(GameObject item, int num, bool isInit)
     {
         GameObject temp = null;
 
@@ -208,27 +229,55 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            Inventory Newinven = new Inventory { item = item, quantity = 1 };
-            inventorys.Add(Newinven);
-            if(!inventory_List.Contains(item))
-                inventory_List.Add(item);
-            for (int i = 0; i < 6; i++)
+            if(!isInit)
             {
-                if (Bag_Content.transform.GetChild(i).childCount == 0)
+                Inventory Newinven = new Inventory { item = item, quantity = 1 };
+                inventorys.Add(Newinven);
+                if (!inventory_List.Contains(item))
+                    inventory_List.Add(item);
+                for (int i = 0; i < 6; i++)
                 {
+                    if (Bag_Content.transform.GetChild(i).childCount == 0)
+                    {
 
-                    temp = Instantiate(item);
-                    temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
-                    break;
+                        temp = Instantiate(item);
+                        temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
+                        break;
+                    }
+                }
+                Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                Newinven.quantity_text.text = Newinven.quantity.ToString();
+
+                Newinven.toggle = temp.GetComponent<Toggle>();
+                if (Newinven.toggle != null)
+                {
+                    Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
                 }
             }
-            Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
-            Newinven.quantity_text.text = Newinven.quantity.ToString();
-
-            Newinven.toggle = temp.GetComponent<Toggle>();
-            if (Newinven.toggle != null)
+            else
             {
-                Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
+                Inventory Newinven = new Inventory { item = item, quantity = num };
+                inventorys.Add(Newinven);
+                if (!inventory_List.Contains(item))
+                    inventory_List.Add(item);
+                for (int i = 0; i < 6; i++)
+                {
+                    if (Bag_Content.transform.GetChild(i).childCount == 0)
+                    {
+
+                        temp = Instantiate(item);
+                        temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
+                        break;
+                    }
+                }
+                Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                Newinven.quantity_text.text = Newinven.quantity.ToString();
+
+                Newinven.toggle = temp.GetComponent<Toggle>();
+                if (Newinven.toggle != null)
+                {
+                    Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Newtonsoft.Json;
 
 public class GameManager : MonoBehaviour
 {
@@ -102,6 +103,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         ui = GetComponent<UIManager>();
+        ui.UI_Init();
         scene = CurrentScene.title;
     }
 
@@ -134,16 +136,17 @@ public class GameManager : MonoBehaviour
 
     private void init()
     {
-        data = new Data();
         string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
 
         if (File.Exists(filePath))
         {
             string jsonData = File.ReadAllText(filePath);
-            data = JsonUtility.FromJson<Data>(jsonData);
+            data = JsonConvert.DeserializeObject<Data>(jsonData);
         }
         else
         {
+            Debug.Log("fdafd");
+            data = new Data();
             string saveData = JsonUtility.ToJson(data, true);
             filePath = Application.persistentDataPath + "/userdata.json";
             File.WriteAllText(filePath, saveData);
@@ -201,6 +204,9 @@ public class GameManager : MonoBehaviour
             AuctionPricing();
             Debug.Log(data.AuctionPrice["lettuce"]);
         }
+
+        InitInventory();
+        InitStorage();
     }
 
     private void SaveData()
@@ -209,7 +215,7 @@ public class GameManager : MonoBehaviour
         data.currentday = dt.Day;
 
         string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
-        string saveData = JsonUtility.ToJson(data, true);
+        string saveData = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(filePath, saveData);
     }
 
@@ -343,8 +349,28 @@ public class GameManager : MonoBehaviour
         {
             if (item.Key == "lettuce")
             {
-                ui.AddInventory(Seed_Lt, item.Value);
+                ui.AddInventory(Seed_Lt, item.Value, false);
             }
+        }
+    }
+
+    private void InitInventory()
+    {
+        foreach (var item in data.Inventory)
+        {
+            if (item.Key == "lettuce")
+            {
+                ui.AddInventory(Seed_Lt, item.Value, true);
+            }
+        }
+    }
+
+    private void InitStorage()
+    {
+        foreach (var item in data.CropWarehouse)
+        {
+
+            ui.AddStorage(item.Key, item.Value, true);
         }
     }
 
@@ -356,7 +382,7 @@ public class GameManager : MonoBehaviour
     public void HarvestCrops(string name)
     {
         data.CropWarehouse[name] += 1;
-        ui.AddStorage(name, data.CropWarehouse[name]);
+        ui.AddStorage(name, data.CropWarehouse[name], false);
     }
 
     public void Selling(string name, int num)
