@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
         public int money;
         public int startday;
         public int currentday;
+        public int storage_count;
 
         public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
         public Dictionary<string, int> Inventory = new Dictionary<string, int>();
@@ -64,14 +65,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int gameMoney;
     [SerializeField] private bool useItem;
-    [SerializeField] private int storage_Count;
     public int Storage_Count
     {
-        get { return storage_Count; }
-        set { storage_Count = value; }
+        get { return data.storage_count; }
+        set { data.storage_count = value; }
     }
 
-    public string usedName;
+    public string usedName = "";
     public bool UseItem
     {
         get { return useItem; }
@@ -145,7 +145,6 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("fdafd");
             data = new Data();
             string saveData = JsonUtility.ToJson(data, true);
             filePath = Application.persistentDataPath + "/userdata.json";
@@ -171,10 +170,12 @@ public class GameManager : MonoBehaviour
             data.CropWarehouse.Add("lettuce", 0);
             data.CropWarehouse.Add("spinach", 0);
             data.CropWarehouse.Add("garlic", 0);
+
+            data.storage_count = 50;
         }
 
         GameMoney = data.money;
-        Storage_Count = 50;
+        //Storage_Count = 50;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
 

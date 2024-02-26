@@ -61,6 +61,10 @@ public class FieldManager : MonoBehaviour
                                     Growth_Type["lettuce"] = true;
                                 }
                                 break;
+
+                            default:
+                                Debug.Log("fdaf");
+                                break;
                         }
                     }
                 }

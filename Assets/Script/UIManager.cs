@@ -31,7 +31,7 @@ public class UIManager : MonoBehaviour
         public float fresh_time;
     }
 
-    public class Inventory
+    private class Inventory
     {
         public GameObject item;
         public int quantity;
@@ -39,8 +39,17 @@ public class UIManager : MonoBehaviour
         public Toggle toggle;
     }
 
+    public class Cultivation_Menu
+    {
+        public GameObject item;
+        public GameObject microbe;
+        public bool fertilizer;
+    }
+
     [SerializeField] private List<Slot> slots = new List<Slot>();
     [SerializeField] private List<Inventory> inventorys = new List<Inventory>();
+    private Cultivation_Menu cm = new Cultivation_Menu();
+    [SerializeField] private GameObject Cultivation_Menu_Object;
 
     public UserInfo ui = new UserInfo();
 
@@ -154,12 +163,36 @@ public class UIManager : MonoBehaviour
         {
             GameManager.instance.UseItem = true;
             GameManager.instance.IsUsedItem(item);
+            //UseItem_Inventory(item);
         }
 
         else
         {
             GameManager.instance.UseItem= false;
+            //UseItem_Inventory(null);
         }
+    }
+
+    private void MakeSlot(string name, int num)
+    {
+        GameObject temp = null;
+        Slot Newslot = new Slot { item = StorageSlot[name], quantity = 2 };
+        slots.Add(Newslot);
+        for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+        {
+            if (Storage_Inven.transform.GetChild(i).childCount == 0)
+            {
+
+                temp = Instantiate(StorageSlot[name]);
+                temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                break;
+            }
+        }
+        Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+        Newslot.quantity_text.text = Newslot.quantity.ToString();
+
+        if (num > 2)
+            MakeSlot(name, num - 2);
     }
 
     public void AddStorage(string name, int num, bool isInit)
@@ -197,20 +230,27 @@ public class UIManager : MonoBehaviour
 
                     else
                     {
-                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
-                        slots.Add(Newslot);
-                        for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+                        if(num <= 2)
                         {
-                            if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                            Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
+                            slots.Add(Newslot);
+                            for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                             {
-
-                                temp = Instantiate(StorageSlot[name]);
-                                temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
-                                break;
+                                if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                                {
+                                    temp = Instantiate(StorageSlot[name]);
+                                    temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                                    break;
+                                }
                             }
+                            Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                            Newslot.quantity_text.text = Newslot.quantity.ToString();
                         }
-                        Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
-                        Newslot.quantity_text.text = Newslot.quantity.ToString();
+
+                        else
+                        {
+                           MakeSlot(name, num);
+                        }
                     }
                 }
                 break;
@@ -256,30 +296,40 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                Inventory Newinven = new Inventory { item = item, quantity = num };
-                inventorys.Add(Newinven);
-                if (!inventory_List.Contains(item))
-                    inventory_List.Add(item);
-                for (int i = 0; i < 6; i++)
+                if(num != 0)
                 {
-                    if (Bag_Content.transform.GetChild(i).childCount == 0)
+                    Inventory Newinven = new Inventory { item = item, quantity = num };
+                    inventorys.Add(Newinven);
+                    if (!inventory_List.Contains(item))
+                        inventory_List.Add(item);
+                    for (int i = 0; i < 6; i++)
                     {
+                        if (Bag_Content.transform.GetChild(i).childCount == 0)
+                        {
 
-                        temp = Instantiate(item);
-                        temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
-                        break;
+                            temp = Instantiate(item);
+                            temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
+                            break;
+                        }
+                    }
+                    Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                    Newinven.quantity_text.text = Newinven.quantity.ToString();
+
+                    Newinven.toggle = temp.GetComponent<Toggle>();
+                    if (Newinven.toggle != null)
+                    {
+                        Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
                     }
                 }
-                Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
-                Newinven.quantity_text.text = Newinven.quantity.ToString();
-
-                Newinven.toggle = temp.GetComponent<Toggle>();
-                if (Newinven.toggle != null)
-                {
-                    Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
-                }
+                
             }
         }
+    }
+
+    private void UseItem_Inventory(GameObject item)
+    {
+        cm.item = item;
+        Cultivation_Menu_Object.SetActive(true);
     }
 
     private void IsFreshSlot()
