@@ -162,13 +162,14 @@ public class UIManager : MonoBehaviour
         if (isUsed)
         {
             GameManager.instance.UseItem = true;
-            GameManager.instance.IsUsedItem(item);
+            GameManager.instance.IsUsedItem(item.name);
             //UseItem_Inventory(item);
         }
 
         else
         {
             GameManager.instance.UseItem= false;
+            GameManager.instance.IsUsedItem("");
             //UseItem_Inventory(null);
         }
     }

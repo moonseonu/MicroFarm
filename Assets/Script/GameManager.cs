@@ -16,7 +16,17 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// ui에서 설정한 값에 따라 아이템 사용, 작물 심기 상태 변경
     /// </summary>
+    private class FieldData
+    {
+        public int field_num;
+        public string type;
+        public float time1;
+        public float time2;
+        public float time3;
 
+        public DateTime start_time;
+        public int count;
+    }
     private class Data
     {
         public string name;
@@ -30,6 +40,9 @@ public class GameManager : MonoBehaviour
         public Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
         public Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
         public Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
+
+        public List<FieldData> fieldDatas = new List<FieldData>();
+        public int fieldCount;
     }
     Data data;
     string dataFileName = "data.json";
@@ -172,33 +185,12 @@ public class GameManager : MonoBehaviour
             data.CropWarehouse.Add("garlic", 0);
 
             data.storage_count = 50;
+            data.fieldCount = 9;
         }
 
         GameMoney = data.money;
-        //Storage_Count = 50;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
-
-        //CropsLevel.Add("lettuce", 1);
-        //CropsLevel.Add("spinach", 1);
-        //CropsLevel.Add("garlic", 1);
-
-        //Inventory.Add("promoter", 0);
-        //Inventory.Add("nutrients", 0);
-        //Inventory.Add("Rertilizer", 0);
-        //Inventory.Add("lettuce", 0);
-        //Inventory.Add("spinach", 0);
-        //Inventory.Add("garlic", 0);
-
-        //AuctionPrice.Add("lettuce", 0);
-        //AuctionPrice.Add("spinach", 0);
-        //AuctionPrice.Add("garlic", 0);
-
-        //SeedPrice.Add("lettuce", 10);
-
-        //CropWarehouse.Add("lettuce", 0);
-        //CropWarehouse.Add("spinach", 0);
-        //CropWarehouse.Add("garlic", 0);
 
         if(data.currentday != dt.Day)
         {
@@ -223,7 +215,7 @@ public class GameManager : MonoBehaviour
     private void InstanceField()
     {
         Vector3 pos = GameObject.Find("ParentField").transform.position;
-
+        int fieldNum = 0;
         for(int i = 0; i < 3; i++)
         {
             for(int j = 0; j < 3; j++)
@@ -233,6 +225,23 @@ public class GameManager : MonoBehaviour
                 {
                     GameObject cloneField = Instantiate(Field, pos, Quaternion.identity);
                     cloneField.transform.parent = GameObject.Find("ParentField").transform;
+                    fm = cloneField.GetComponent<FieldManager>();
+                    FieldData ExistFieldData = data.fieldDatas.Find(ExistFieldData => ExistFieldData.field_num == fieldNum);
+
+                    if(ExistFieldData == null || ExistFieldData.type == null)
+                    {
+                        FieldData NewData = new FieldData { field_num = fieldNum };
+                        data.fieldDatas.Add(NewData);
+                        fm.Init(fieldNum);
+                    }
+
+                    else if(ExistFieldData.type != null)
+                    {
+                        TimeSpan time = DateTime.Now - ExistFieldData.start_time;
+                        fm.Init(fieldNum, ExistFieldData.type ,time);
+                    }
+
+                    fieldNum++;
                 }
             }
             pos += Vector3.down;
@@ -375,9 +384,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void IsUsedItem(GameObject item)
+    public void IsUsedItem(string name)
     {
-        usedName = item.name;
+        usedName = name;
     }
 
     public void HarvestCrops(string name)
@@ -399,5 +408,36 @@ public class GameManager : MonoBehaviour
         AddInventory(name);
         GameMoney -= num * data.SeedPrice[name];
         ui.ui.Money = GameMoney;
+    }
+
+    public TimeSpan Growth_Time_Manager(string name, int num)
+    {
+        FieldData ExistData = data.fieldDatas.Find(ExistData => ExistData.field_num == num);
+
+        if (ExistData != null && ExistData.type == null)
+        {
+            ExistData.type = name;
+
+            ExistData.start_time = DateTime.Now;
+            ExistData.count = 0;
+        }
+
+        TimeSpan timeSpan = DateTime.Now - ExistData.start_time;
+        return timeSpan;
+    }
+
+    public void FieldDataInit(int num)
+    {
+        FieldData ExistData = data.fieldDatas.Find(ExistData => ExistData.field_num == num);
+
+        if(ExistData != null)
+        {
+            ExistData.type = null;
+            ExistData.time1 = 0;
+            ExistData.time2 = 0;
+            ExistData.time3 = 0;
+            ExistData.count = 0;
+            ExistData.start_time = DateTime.MinValue;
+        }
     }
 }
