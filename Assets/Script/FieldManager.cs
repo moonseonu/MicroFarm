@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class FieldManager : MonoBehaviour
 {
+
     private SpriteRenderer Sr;
     [SerializeField] private float time;
     private Dictionary<string, bool> Growth_Type = new Dictionary<string, bool>();
@@ -72,11 +73,13 @@ public class FieldManager : MonoBehaviour
         {
             GrowingLettuce33.SetActive(true);
             isHarvest = true;
-            Debug.Log(isHarvest);
         }
     }
 
+    private void Cultivation_Manager()
+    {
 
+    }
 
     private void Cultivation()
     {
@@ -119,7 +122,8 @@ public class FieldManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == gameObject)
                     {
-                        Debug.Log("ffa");
+                        UIManager ui = GameManager.instance.GetComponent<UIManager>();
+                        ui.Open_Cultivation_Menu();
                     }
                 }
             }

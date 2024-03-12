@@ -85,6 +85,8 @@ public class GameManager : MonoBehaviour
         set { data.storage_count = value; }
     }
 
+    public string[] cultivate = new string[3];
+
     public string usedName = "";
     public bool UseItem
     {
@@ -448,6 +450,24 @@ public class GameManager : MonoBehaviour
             ExistData.time3 = 0;
             ExistData.count = 0;
             ExistData.start_time = DateTime.MinValue;
+        }
+    }
+
+    public void CultivationManager(string name)
+    {
+        switch (name)
+        {
+            case "lettuce":
+                cultivate[0] = "lettuce";
+                break;
+
+            case "microbe1":
+                cultivate[1] = "microbe1";
+                break;
+
+            case "fertilizer":
+                cultivate[2] = "fertilizer";
+                break;
         }
     }
 

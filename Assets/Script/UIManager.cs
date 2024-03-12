@@ -39,16 +39,8 @@ public class UIManager : MonoBehaviour
         public Toggle toggle;
     }
 
-    public class Cultivation_Menu
-    {
-        public GameObject item;
-        public GameObject microbe;
-        public bool fertilizer;
-    }
-
     [SerializeField] private List<Slot> slots = new List<Slot>();
     [SerializeField] private List<Inventory> inventorys = new List<Inventory>();
-    private Cultivation_Menu cm = new Cultivation_Menu();
     [SerializeField] private GameObject Cultivation_Menu_Object;
 
     public UserInfo ui = new UserInfo();
@@ -102,6 +94,19 @@ public class UIManager : MonoBehaviour
 
         StorageSlot.Add("lettuce", Lettuce_Slot);
         StorageSlot.Add("rotten", Rotten_Slot);
+    }
+
+    public void Open_Cultivation_Menu()
+    {
+        if (!Cultivation_Menu_Object.activeSelf)
+        {
+            Cultivation_Menu_Object.SetActive(true);
+        }
+
+        else
+        {
+            Cultivation_Menu_Object.SetActive(false);
+        }
     }
 
     public void ButtonEvent(string name)
@@ -325,12 +330,6 @@ public class UIManager : MonoBehaviour
                 
             }
         }
-    }
-
-    private void UseItem_Inventory(GameObject item)
-    {
-        cm.item = item;
-        Cultivation_Menu_Object.SetActive(true);
     }
 
     private void IsFreshSlot()
