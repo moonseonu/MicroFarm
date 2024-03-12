@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
         public Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
         public Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
         public Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
+        public Dictionary<string, int> Microbe = new Dictionary<string, int>();
 
         public List<FieldData> fieldDatas = new List<FieldData>();
         public int fieldCount;
@@ -184,6 +185,10 @@ public class GameManager : MonoBehaviour
             data.CropWarehouse.Add("spinach", 0);
             data.CropWarehouse.Add("garlic", 0);
 
+            data.Microbe.Add("microbe1", 0);
+            data.Microbe.Add("microbe2", 0);
+            data.Microbe.Add("microbe3", 0);
+
             data.storage_count = 50;
             data.fieldCount = 9;
         }
@@ -228,14 +233,19 @@ public class GameManager : MonoBehaviour
                     fm = cloneField.GetComponent<FieldManager>();
                     FieldData ExistFieldData = data.fieldDatas.Find(ExistFieldData => ExistFieldData.field_num == fieldNum);
 
-                    if(ExistFieldData == null || ExistFieldData.type == null)
+                    if(ExistFieldData == null)
                     {
                         FieldData NewData = new FieldData { field_num = fieldNum };
                         data.fieldDatas.Add(NewData);
                         fm.Init(fieldNum);
                     }
 
-                    else if(ExistFieldData.type != null)
+                    if(ExistFieldData.type == "")
+                    {
+                        fm.Init(fieldNum);
+                    }
+
+                    else
                     {
                         TimeSpan time = DateTime.Now - ExistFieldData.start_time;
                         fm.Init(fieldNum, ExistFieldData.type ,time);
@@ -439,5 +449,10 @@ public class GameManager : MonoBehaviour
             ExistData.count = 0;
             ExistData.start_time = DateTime.MinValue;
         }
+    }
+
+    private void MicrobeManager()
+    {
+
     }
 }
