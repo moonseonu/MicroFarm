@@ -1620,10 +1620,6 @@ MonoBehaviour:
   Storage: {fileID: 2049233134}
   gameMoney: 0
   useItem: 0
-  cultivate:
-  - 
-  - 
-  - 
   usedName: 
   onehour: 3600
   currentTime: 0
@@ -5595,7 +5591,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1679185957
 RectTransform:
   m_ObjectHideFlags: 0
