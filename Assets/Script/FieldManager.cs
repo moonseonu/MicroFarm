@@ -24,6 +24,7 @@ public class FieldManager : MonoBehaviour
     [SerializeField] private GameObject GrowingLettuce33;
 
     private bool isHarvest;
+    private bool isMenu;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,13 +36,14 @@ public class FieldManager : MonoBehaviour
     {
         Cultivation();
         Growth();
-        Harvest();
+        //Harvest();
     }
 
     public void Init(int num)
     {
         FieldNum = num;
         isHarvest = false;
+        isMenu = false;
         Growth_Type.Add("lettuce", false);
         Growth_Type.Add("spinach", false);
         Growth_Type.Add("garlic", false);
@@ -75,15 +77,9 @@ public class FieldManager : MonoBehaviour
             isHarvest = true;
         }
     }
-
-    private void Cultivation_Manager()
-    {
-
-    }
-
     private void Cultivation()
     {
-        if (GameManager.instance.UseItem)
+        if (!isHarvest)
         {
             if (Input.GetMouseButtonUp(0))
             {
@@ -94,24 +90,36 @@ public class FieldManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == gameObject)
                     {
-                        switch (GameManager.instance.usedName)
+                        if (!isMenu)
                         {
-                            case "Seed_Lt":
-                                if (GameManager.instance.Inventory_Count("lettuce") != 0)
+                            UIManager ui = GameManager.instance.GetComponent<UIManager>();
+                            ui.Open_Cultivation_Menu();
+                            isMenu = true;
+                        }
+
+                        else
+                        {
+                            UIManager ui = GameManager.instance.GetComponent<UIManager>();
+                            ui.Open_Cultivation_Menu();
+                            isMenu = false;
+
+                            foreach(var item in GameManager.instance.cultivate)
+                            {
+                                if(item.Value == true && GameManager.instance.Inventory_Count("lettuce") != 0)
                                 {
                                     Lettuce.SetActive(true);
                                     if (!isHarvest && !Growth_Type["lettuce"])
                                         GameManager.instance.UseInventory("lettuce");
-                                    Growth_Type["lettuce"] = true;
+                                    Growth_Type[item.Key] = true;
                                 }
-                                break;
+                            }
                         }
                     }
                 }
             }
         }
 
-        else if(!isHarvest)
+        else
         {
             if (Input.GetMouseButtonUp(0))
             {
@@ -122,8 +130,16 @@ public class FieldManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == gameObject)
                     {
-                        UIManager ui = GameManager.instance.GetComponent<UIManager>();
-                        ui.Open_Cultivation_Menu();
+
+                        GrowingLettuce11.SetActive(false);
+                        GrowingLettuce22.SetActive(false);
+                        GrowingLettuce33.SetActive(false);
+                        Lettuce.SetActive(false);
+                        GameManager.instance.HarvestCrops("lettuce");
+                        isHarvest = false;
+                        Growth_Type["lettuce"] = false;
+                        time = 0.0f;
+                        GameManager.instance.FieldDataInit(FieldNum);
                     }
                 }
             }
@@ -154,6 +170,7 @@ public class FieldManager : MonoBehaviour
     {
         if (isHarvest)
         {
+            Debug.Log("click");
             if (Input.GetMouseButtonUp(0))
             {
                 Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

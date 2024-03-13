@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using Newtonsoft.Json;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -85,7 +86,7 @@ public class GameManager : MonoBehaviour
         set { data.storage_count = value; }
     }
 
-    public string[] cultivate = new string[3];
+    public Dictionary<string, bool>cultivate = new Dictionary<string, bool>();
 
     public string usedName = "";
     public bool UseItem
@@ -134,7 +135,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         OnClickConstruction();
-        InstanceField();
         SaveData();
     }
 
@@ -207,6 +207,11 @@ public class GameManager : MonoBehaviour
 
         InitInventory();
         InitStorage();
+        InstanceField();
+
+        cultivate.Add("lettuce", false);
+        cultivate.Add("microbe1", false);
+        cultivate.Add("fertilizer", false);
     }
 
     private void SaveData()
@@ -237,17 +242,17 @@ public class GameManager : MonoBehaviour
 
                     if(ExistFieldData == null)
                     {
-                        FieldData NewData = new FieldData { field_num = fieldNum };
+                        FieldData NewData = new FieldData { field_num = fieldNum , type = ""};
                         data.fieldDatas.Add(NewData);
                         fm.Init(fieldNum);
                     }
 
-                    if(ExistFieldData.type == "")
+                    else if(ExistFieldData != null && ExistFieldData.type == "")
                     {
                         fm.Init(fieldNum);
                     }
 
-                    else
+                    else if(ExistFieldData != null && ExistFieldData.type != "")
                     {
                         TimeSpan time = DateTime.Now - ExistFieldData.start_time;
                         fm.Init(fieldNum, ExistFieldData.type ,time);
@@ -425,8 +430,7 @@ public class GameManager : MonoBehaviour
     public TimeSpan Growth_Time_Manager(string name, int num)
     {
         FieldData ExistData = data.fieldDatas.Find(ExistData => ExistData.field_num == num);
-
-        if (ExistData != null && ExistData.type == null)
+        if (ExistData != null && ExistData.type == "")
         {
             ExistData.type = name;
 
@@ -444,7 +448,7 @@ public class GameManager : MonoBehaviour
 
         if(ExistData != null)
         {
-            ExistData.type = null;
+            ExistData.type = "";
             ExistData.time1 = 0;
             ExistData.time2 = 0;
             ExistData.time3 = 0;
@@ -458,15 +462,18 @@ public class GameManager : MonoBehaviour
         switch (name)
         {
             case "lettuce":
-                cultivate[0] = "lettuce";
+                if (!cultivate["lettuce"])
+                    cultivate["lettuce"] = true;
+                else
+                    cultivate["lettuce"] = false;
                 break;
 
             case "microbe1":
-                cultivate[1] = "microbe1";
+
                 break;
 
             case "fertilizer":
-                cultivate[2] = "fertilizer";
+
                 break;
         }
     }
