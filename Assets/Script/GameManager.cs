@@ -21,10 +21,7 @@ public class GameManager : MonoBehaviour
     {
         public int field_num;
         public string type;
-        public float time1;
-        public float time2;
-        public float time3;
-
+        public string microbe;
         public DateTime start_time;
         public int count;
     }
@@ -187,7 +184,7 @@ public class GameManager : MonoBehaviour
             data.CropWarehouse.Add("spinach", 0);
             data.CropWarehouse.Add("garlic", 0);
 
-            data.Microbe.Add("microbe1", 0);
+            data.Microbe.Add("microbe1", 1);
             data.Microbe.Add("microbe2", 0);
             data.Microbe.Add("microbe3", 0);
 
@@ -247,15 +244,15 @@ public class GameManager : MonoBehaviour
                         fm.Init(fieldNum);
                     }
 
-                    else if(ExistFieldData != null && ExistFieldData.type == "")
+                    else if(ExistFieldData != null && ExistFieldData.type == "" && ExistFieldData.microbe == "")
                     {
                         fm.Init(fieldNum);
                     }
 
-                    else if(ExistFieldData != null && ExistFieldData.type != "")
+                    else if(ExistFieldData != null && ExistFieldData.type != "" && ExistFieldData.microbe != "")
                     {
                         TimeSpan time = DateTime.Now - ExistFieldData.start_time;
-                        fm.Init(fieldNum, ExistFieldData.type ,time);
+                        fm.Init(fieldNum, ExistFieldData.type, ExistFieldData.microbe ,time);
                     }
 
                     fieldNum++;
@@ -313,6 +310,11 @@ public class GameManager : MonoBehaviour
     public int Inventory_Count(string name)
     {
         return data.Inventory[name];
+    }
+
+    public int Microbe_Count(string name)
+    {
+        return data.Microbe[name];
     }
 
     public int[] Timer()
@@ -449,9 +451,6 @@ public class GameManager : MonoBehaviour
         if(ExistData != null)
         {
             ExistData.type = "";
-            ExistData.time1 = 0;
-            ExistData.time2 = 0;
-            ExistData.time3 = 0;
             ExistData.count = 0;
             ExistData.start_time = DateTime.MinValue;
         }
@@ -469,7 +468,12 @@ public class GameManager : MonoBehaviour
                 break;
 
             case "microbe1":
-
+                if (!cultivate["microbe1"])
+                {
+                    cultivate["microbe1"] = true;
+                }
+                else
+                    cultivate["microbe1"] = false;
                 break;
 
             case "fertilizer":
