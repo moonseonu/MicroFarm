@@ -40,6 +40,15 @@ public class UIManager : MonoBehaviour
         public Toggle toggle;
     }
 
+    private class Laboratory
+    {
+        public string name;
+        public int quantity;
+        public TMP_Text quantity_text;
+    }
+
+    private List<Laboratory> laboratory = new List<Laboratory>();
+
     [SerializeField] private List<Slot> slots = new List<Slot>();
     [SerializeField] private List<GameObject> UIslot = new List<GameObject>();
     [SerializeField] private List<Inventory> inventorys = new List<Inventory>();
@@ -172,6 +181,36 @@ public class UIManager : MonoBehaviour
     public void Laboratory_Open()
     {
         Laboratory_Board.SetActive(true);
+    }
+
+    public void Laboratory_Manager(int microbe1, int microbe2, int microbe3)
+    {
+        Laboratory lab1 = new Laboratory { name = "microbe1", quantity = microbe1 };
+        Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2 };
+        Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3 };
+
+        UpdateText(lab1.quantity, lab1.quantity_text, Laboratory_Board, lab1.name, 0);
+        UpdateText(lab2.quantity, lab2.quantity_text, Laboratory_Board, lab2.name, 0);
+        UpdateText(lab3.quantity, lab3.quantity_text, Laboratory_Board, lab3.name, 0);
+        laboratory.Add(lab1);
+        laboratory.Add(lab2);
+        laboratory.Add(lab3);
+    }
+
+    public void Update_Lab(string name, int num)
+    {
+        Laboratory Exist = laboratory.Find(Exist => Exist.name == name);
+        if (Exist != null)
+        {
+            UpdateText(Exist.quantity, Exist.quantity_text, Laboratory_Board, name, num);
+        }
+    }
+
+    private void UpdateText(int quantity, TMP_Text text, GameObject go, string name, int num)
+    {
+        quantity += num;
+        text = go.transform.Find(name).transform.Find("Count").GetComponent< TMP_Text>();
+        text.text = quantity.ToString();
     }
 
     public void IsUsedItem(bool isUsed, GameObject item)
@@ -442,7 +481,6 @@ public class UIManager : MonoBehaviour
         Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity != 2);
         if (Existslot != null)
         {
-            Debug.Log("fadfd");
             temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
             Existslot.quantity -= num;
             if (Existslot.quantity == 0)

@@ -205,6 +205,7 @@ public class GameManager : MonoBehaviour
         InitInventory();
         InitStorage();
         InstanceField();
+        Microbe_Init();
 
         cultivate.Add("lettuce", false);
         cultivate.Add("microbe1", false);
@@ -426,7 +427,7 @@ public class GameManager : MonoBehaviour
         if(random == 0)
         {
             data.Microbe["microbe1"] += 1;
-            Debug.Log(data.Microbe["microbe1"]);
+            ui.Update_Lab("microbe1", 1);
         }
     }
 
@@ -498,8 +499,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void MicrobeManager()
+    private void Microbe_Init()
     {
-
+        ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"]);
     }
 }
