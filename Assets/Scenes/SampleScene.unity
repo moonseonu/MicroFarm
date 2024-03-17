@@ -1651,10 +1651,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b77596fa03f482343871f838b1e16bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UIslot: []
   Cultivation_Menu_Object: {fileID: 1679185956}
   Money_Text: {fileID: 2117780485}
   UserName_Text: {fileID: 1219598164}
   Storage_Inven: {fileID: 1019394823}
+  Laboratory_Board: {fileID: 1616177419}
   Bag_Content: {fileID: 594440871}
   Bag_Open: {fileID: 837789002}
   Shop: {fileID: 170835000}
