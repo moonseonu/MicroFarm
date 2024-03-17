@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class UIManager : MonoBehaviour
 {
@@ -40,6 +41,7 @@ public class UIManager : MonoBehaviour
     }
 
     [SerializeField] private List<Slot> slots = new List<Slot>();
+    [SerializeField] private List<GameObject> UIslot = new List<GameObject>();
     [SerializeField] private List<Inventory> inventorys = new List<Inventory>();
     [SerializeField] private GameObject Cultivation_Menu_Object;
 
@@ -49,6 +51,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text UserName_Text;
 
     [SerializeField] private GameObject Storage_Inven;
+    [SerializeField] private GameObject Laboratory_Board;
     [SerializeField] private GameObject Bag_Content;
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
@@ -148,6 +151,10 @@ public class UIManager : MonoBehaviour
             case "sell lettuce":
                 SellCrop("lettuce", 1);
                 break;
+
+            case "close lab":
+                Laboratory_Board.SetActive(false);
+                break;
         }
     }
 
@@ -160,6 +167,11 @@ public class UIManager : MonoBehaviour
     public void StorageInstance()
     {
         Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
+    }
+
+    public void Laboratory_Open()
+    {
+        Laboratory_Board.SetActive(true);
     }
 
     public void IsUsedItem(bool isUsed, GameObject item)
@@ -182,23 +194,47 @@ public class UIManager : MonoBehaviour
     private void MakeSlot(string name, int num)
     {
         GameObject temp = null;
-        Slot Newslot = new Slot { item = StorageSlot[name], quantity = 2 };
-        slots.Add(Newslot);
-        for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+        if(num != 1)
         {
-            if (Storage_Inven.transform.GetChild(i).childCount == 0)
+            for (int i = 0; i < GameManager.instance.Storage_Count; i++)
             {
+                if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                {
 
-                temp = Instantiate(StorageSlot[name]);
-                temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
-                break;
+                    temp = Instantiate(StorageSlot[name]);
+                    temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                    break;
+                }
             }
+            Slot Newslot = new Slot { item = StorageSlot[name], quantity = 2 };
+            slots.Add(Newslot);
+            Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+            Newslot.quantity_text.text = Newslot.quantity.ToString();
+            num -= 2;
         }
-        Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
-        Newslot.quantity_text.text = Newslot.quantity.ToString();
 
+        else
+        {
+            for (int i = 0; i < GameManager.instance.Storage_Count; i++)
+            {
+                if (Storage_Inven.transform.GetChild(i).childCount == 0)
+                {
+
+                    temp = Instantiate(StorageSlot[name]);
+                    temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
+                    break;
+                }
+            }
+            Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
+            slots.Add(Newslot);
+            Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+            Newslot.quantity_text.text = Newslot.quantity.ToString();
+            num = 0;
+        }
         if (num > 2)
-            MakeSlot(name, num - 2);
+            MakeSlot(name, num);
+        else if(num == 1)
+            MakeSlot(name, 1);
     }
 
     public void AddStorage(string name, int num, bool isInit)
@@ -207,19 +243,17 @@ public class UIManager : MonoBehaviour
         switch (name)
         {
             case "lettuce":
-
-                Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity < 2);
-                if(Existslot != null)
+                if (!isInit)
                 {
-                    Existslot.quantity++;
-                    Existslot.quantity_text.text = Existslot.quantity.ToString();
-                }
-                else
-                {
-                    if (!isInit)
+                    Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity < 2);
+                    if (Existslot != null)
                     {
-                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
-                        slots.Add(Newslot);
+                        Existslot.quantity += num;
+                        Existslot.quantity_text.text = Existslot.quantity.ToString();
+                    }
+
+                    else
+                    {
                         for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                         {
                             if (Storage_Inven.transform.GetChild(i).childCount == 0)
@@ -230,16 +264,20 @@ public class UIManager : MonoBehaviour
                                 break;
                             }
                         }
+                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
+                        slots.Add(Newslot);
                         Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                         Newslot.quantity_text.text = Newslot.quantity.ToString();
                     }
 
-                    else
+                }
+
+                else
+                {
+                    if (num <= 2)
                     {
-                        if(num <= 2)
+                        if(num != 0)
                         {
-                            Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
-                            slots.Add(Newslot);
                             for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                             {
                                 if (Storage_Inven.transform.GetChild(i).childCount == 0)
@@ -249,15 +287,19 @@ public class UIManager : MonoBehaviour
                                     break;
                                 }
                             }
+                            Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
+                            slots.Add(Newslot);
                             Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                             Newslot.quantity_text.text = Newslot.quantity.ToString();
                         }
-
-                        else
-                        {
-                           MakeSlot(name, num);
-                        }
+                      
                     }
+
+                    else
+                    {
+                        MakeSlot(name, num);
+                    }
+
                 }
                 break;
         }
@@ -385,38 +427,43 @@ public class UIManager : MonoBehaviour
 
     private void SellCrop(string name, int num)
     {
-        switch (name)
-        {
-            case "lettuce":
-                Debug.Log(slots.Count);
-                for(int i = 0; i < slots.Count; i++)
-                {
-                    if (slots[i].item.name == StorageSlot[name].name)
-                    {
-                        if (slots[i].quantity < num)
-                        {
-                            num -= slots[i].quantity;
-                            slots[i].item = Rotten_Slot;
-                            Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
-                            Destroy(slot.gameObject);
-                            slots.RemoveAt(i);
-                        }
+        GameManager.instance.Selling(name, num);
 
-                        else
-                        {
-                            slots[i].quantity -= num;
-                            slots[i].quantity_text.text = slots[i].quantity.ToString();
-                            if (slots[i].quantity == 0)
-                            {
-                                Transform slot = Storage_Inven.transform.GetChild(i).GetChild(0);
-                                Destroy(slot.gameObject);
-                                slots.RemoveAt(i);
-                            }
-                        }
-                    }
-                }
-                GameManager.instance.Selling(name, num);
-                break;
+    }
+
+    /// <summary>
+    /// 아직은 1개씩만 판매하기 때문에 두 슬롯 모두 최대보다 많이 파는 경우는 하지 않음
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="num"></param>
+    public void UpdateStorage(string name, int num)
+    {
+        Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity != 2);
+        if (Existslot != null)
+        {
+            GameObject temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
+            Existslot.quantity -= num;
+            if (Existslot.quantity == 0)
+            {
+                Destroy(temp.gameObject);
+            }
+            else
+            {
+                Existslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                Existslot.quantity_text.text = Existslot.quantity.ToString();
+            }
+        }
+
+        else
+        {
+            Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity == 2);
+            if (Existslot != null)
+            {
+                GameObject temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
+                Existslot.quantity -= num;
+                                Existslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                Existslot.quantity_text.text = Existslot.quantity.ToString();
+            }
         }
     }
 }

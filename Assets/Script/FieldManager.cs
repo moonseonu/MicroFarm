@@ -61,6 +61,9 @@ public class FieldManager : MonoBehaviour
         Growth_Type.Add("lettuce", false);
         Growth_Type.Add("spinach", false);
         Growth_Type.Add("garlic", false);
+        Used_Microbe.Add("microbe1", false);
+
+        Growth_Type[type] = true;
 
         Grow_Time.Add("lettuce", 10.0f);
         if (time >= TimeSpan.FromSeconds(Grow_Time[type] * 1 / 3))
@@ -170,9 +173,9 @@ public class FieldManager : MonoBehaviour
 
     private void Growth()
     {
-        if (Growth_Type["lettuce"])
+        if (Growth_Type.ContainsKey("lettuce") && Growth_Type["lettuce"])
         {
-            if (!Used_Microbe["microbe1"])
+            if (!Used_Microbe["microbe1"] && Used_Microbe.ContainsKey("microbe1"))
             {
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3))
                 {

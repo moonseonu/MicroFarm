@@ -239,9 +239,10 @@ public class GameManager : MonoBehaviour
 
                     if(ExistFieldData == null)
                     {
-                        FieldData NewData = new FieldData { field_num = fieldNum , type = ""};
+                        FieldData NewData = new FieldData { field_num = fieldNum , type = "", microbe = ""};
                         data.fieldDatas.Add(NewData);
                         fm.Init(fieldNum);
+                        Debug.Log("fdafd");
                     }
 
                     else if(ExistFieldData != null && ExistFieldData.type == "" && ExistFieldData.microbe == "")
@@ -253,6 +254,14 @@ public class GameManager : MonoBehaviour
                     {
                         TimeSpan time = DateTime.Now - ExistFieldData.start_time;
                         fm.Init(fieldNum, ExistFieldData.type, ExistFieldData.microbe ,time);
+                        Debug.Log(time);
+                    }
+
+                    else if (ExistFieldData != null && ExistFieldData.type != "" && ExistFieldData.microbe == "")
+                    {
+                        TimeSpan time = DateTime.Now - ExistFieldData.start_time;
+                        fm.Init(fieldNum, ExistFieldData.type, ExistFieldData.microbe, time);
+                        Debug.Log(time);
                     }
 
                     fieldNum++;
@@ -353,7 +362,7 @@ public class GameManager : MonoBehaviour
             {
                 if (hit.collider.gameObject == Laboratory)
                 {
-
+                    ui.Laboratory_Open();
                 }
 
                 else if(hit.collider.gameObject == Fertilizer_Facility)
@@ -411,7 +420,14 @@ public class GameManager : MonoBehaviour
     public void HarvestCrops(string name)
     {
         data.CropWarehouse[name] += 1;
-        ui.AddStorage(name, data.CropWarehouse[name], false);
+        ui.AddStorage(name, 1, false);
+
+        int random = UnityEngine.Random.Range(0, 1);
+        if(random == 0)
+        {
+            data.Microbe["lettuce"] += 1;
+            Debug.Log(data.Microbe["lettuce"]);
+        }
     }
 
     public void Selling(string name, int num)
@@ -419,7 +435,8 @@ public class GameManager : MonoBehaviour
         data.CropWarehouse[name] -= num;
         GameMoney += num * data.AuctionPrice[name];
         ui.ui.Money = GameMoney;
-        Debug.Log(GameMoney);
+
+        ui.UpdateStorage(name, num);
     }
 
     public void Buying(string name, int num)
