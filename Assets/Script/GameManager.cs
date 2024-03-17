@@ -425,18 +425,17 @@ public class GameManager : MonoBehaviour
         int random = UnityEngine.Random.Range(0, 1);
         if(random == 0)
         {
-            data.Microbe["lettuce"] += 1;
-            Debug.Log(data.Microbe["lettuce"]);
+            data.Microbe["microbe1"] += 1;
+            Debug.Log(data.Microbe["microbe1"]);
         }
     }
 
     public void Selling(string name, int num)
     {
+        ui.UpdateStorage(name, num);
         data.CropWarehouse[name] -= num;
         GameMoney += num * data.AuctionPrice[name];
         ui.ui.Money = GameMoney;
-
-        ui.UpdateStorage(name, num);
     }
 
     public void Buying(string name, int num)

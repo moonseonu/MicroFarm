@@ -438,13 +438,16 @@ public class UIManager : MonoBehaviour
     /// <param name="num"></param>
     public void UpdateStorage(string name, int num)
     {
+        GameObject temp = null;
         Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity != 2);
         if (Existslot != null)
         {
-            GameObject temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
+            Debug.Log("fadfd");
+            temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
             Existslot.quantity -= num;
             if (Existslot.quantity == 0)
             {
+                slots.Remove(Existslot);
                 Destroy(temp.gameObject);
             }
             else
@@ -456,12 +459,12 @@ public class UIManager : MonoBehaviour
 
         else
         {
-            Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity == 2);
+            Existslot = slots.FindLast(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity == 2);
             if (Existslot != null)
             {
-                GameObject temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
+                temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
                 Existslot.quantity -= num;
-                                Existslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
+                Existslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                 Existslot.quantity_text.text = Existslot.quantity.ToString();
             }
         }
