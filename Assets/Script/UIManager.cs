@@ -189,7 +189,6 @@ public class UIManager : MonoBehaviour
         Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2 };
         Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3 };
 
-        Debug.Log(Laboratory_Board);
         UpdateText(lab1.quantity, lab1.quantity_text, Laboratory_Board, lab1.name, 0);
         UpdateText(lab2.quantity, lab2.quantity_text, Laboratory_Board, lab2.name, 0);
         UpdateText(lab3.quantity, lab3.quantity_text, Laboratory_Board, lab3.name, 0);
@@ -220,14 +219,12 @@ public class UIManager : MonoBehaviour
         {
             GameManager.instance.UseItem = true;
             GameManager.instance.IsUsedItem(item.name);
-            //UseItem_Inventory(item);
         }
 
         else
         {
             GameManager.instance.UseItem= false;
             GameManager.instance.IsUsedItem("");
-            //UseItem_Inventory(null);
         }
     }
 
