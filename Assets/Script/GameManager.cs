@@ -33,6 +33,10 @@ public class GameManager : MonoBehaviour
         public int currentday;
         public int storage_count;
 
+        public float basePrice = 100.0f; // 초기 주가
+        public float meanChange = 0.0f; // 주가 변동의 평균
+        public float stdDeviation = 5.0f; // 주가 변동의 표준 편차
+
         public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
         public Dictionary<string, int> Inventory = new Dictionary<string, int>();
         public Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
@@ -126,6 +130,7 @@ public class GameManager : MonoBehaviour
     {
         init();
         DateSet();
+        GeneratePriceFluctuations();
     }
 
     // Update is called once per frame
@@ -502,5 +507,32 @@ public class GameManager : MonoBehaviour
     private void Microbe_Init()
     {
         ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"]);
+    }
+
+    float GeneratePriceFluctuations()
+    {
+        DateTime currentDate = DateTime.Now.Date;
+        float currentPrice = (float)data.CropWarehouse["lettuce"];
+
+        // Calculate price fluctuations for each day
+        for (int day = 1; day <= 30; day++)
+        {
+            // Generate random value from Gaussian distribution
+            float randomValue = Mathf.Sqrt(-2.0f * Mathf.Log(UnityEngine.Random.value)) *
+                                Mathf.Cos(2.0f * Mathf.PI * UnityEngine.Random.value);
+
+            // Calculate price change based on Gaussian distribution
+            float priceChange = data.meanChange + randomValue * data.stdDeviation;
+
+            // Update price for the next day
+            currentPrice += priceChange;
+
+            Debug.Log("Date: " + currentDate.ToString("yyyy-MM-dd") + ", Price: " + currentPrice);
+
+            // Move to the next day
+            currentDate = currentDate.AddDays(1);
+        }
+
+        return currentPrice;
     }
 }
