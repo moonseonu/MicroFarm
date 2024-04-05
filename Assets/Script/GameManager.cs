@@ -130,7 +130,6 @@ public class GameManager : MonoBehaviour
     {
         init();
         DateSet();
-        GeneratePriceFluctuations();
     }
 
     // Update is called once per frame
@@ -204,7 +203,6 @@ public class GameManager : MonoBehaviour
         if(data.currentday != dt.Day)
         {
             AuctionPricing();
-            Debug.Log(data.AuctionPrice["lettuce"]);
         }
 
         InitInventory();
@@ -295,7 +293,9 @@ public class GameManager : MonoBehaviour
 
     private void AuctionPricing()
     {
-        data.AuctionPrice["lettuce"] = UnityEngine.Random.Range(30, 150);
+        //data.AuctionPrice["lettuce"] = UnityEngine.Random.Range(30, 150);
+        data.AuctionPrice["lettuce"] = (int)GeneratePriceFluctuations();
+        Debug.Log(data.AuctionPrice["lettuce"]);
         data.AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
         data.AuctionPrice["garlic"] = UnityEngine.Random.Range(500, 2500);
     }
@@ -512,11 +512,10 @@ public class GameManager : MonoBehaviour
     float GeneratePriceFluctuations()
     {
         DateTime currentDate = DateTime.Now.Date;
-        float currentPrice = (float)data.CropWarehouse["lettuce"];
+        float currentPrice = (float)data.AuctionPrice["lettuce"];
 
         // Calculate price fluctuations for each day
-        for (int day = 1; day <= 30; day++)
-        {
+
             // Generate random value from Gaussian distribution
             float randomValue = Mathf.Sqrt(-2.0f * Mathf.Log(UnityEngine.Random.value)) *
                                 Mathf.Cos(2.0f * Mathf.PI * UnityEngine.Random.value);
@@ -527,11 +526,8 @@ public class GameManager : MonoBehaviour
             // Update price for the next day
             currentPrice += priceChange;
 
-            Debug.Log("Date: " + currentDate.ToString("yyyy-MM-dd") + ", Price: " + currentPrice);
-
             // Move to the next day
             currentDate = currentDate.AddDays(1);
-        }
 
         return currentPrice;
     }
