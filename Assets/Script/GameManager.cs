@@ -204,7 +204,7 @@ public class GameManager : MonoBehaviour
         {
             AuctionPricing();
         }
-
+        ui.Auction_Init(data.AuctionPrice);
         InitInventory();
         InitStorage();
         InstanceField();

@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4437222565359946622
 Transform:
   m_ObjectHideFlags: 0
@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f6615006b484b534da6d0c51d8d71400, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b3ef6bf1517aa694f8bd1948a69c40bc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -160,7 +160,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 79adbdb2b6408d3409af7825590ed625, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -197,7 +197,7 @@ Transform:
   m_GameObject: {fileID: 1661834904629984182}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -3}
+  m_LocalPosition: {x: -0.01, y: 0.15, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -244,7 +244,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f80303191a040464d905314107725e76, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 436350018dc60eb469666b180d3e01df, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -328,7 +328,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2237d6b5012838d48aa9808410961251, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 04f0192b9d9dc1e4c8744003af8745c0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -655,9 +655,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   time: 0
   Lettuce: {fileID: 850808566113900136}
-  GrowingLettuce1: {fileID: 21300000, guid: f6615006b484b534da6d0c51d8d71400, type: 3}
-  GrowingLettuce2: {fileID: 21300000, guid: 2237d6b5012838d48aa9808410961251, type: 3}
-  GrowingLettuce3: {fileID: 21300000, guid: f80303191a040464d905314107725e76, type: 3}
-  GrowingLettuce11: {fileID: 535346024024212185}
-  GrowingLettuce22: {fileID: 2707653860121516269}
-  GrowingLettuce33: {fileID: 1661834904629984182}
+  GrowingLettuce1: {fileID: 535346024024212185}
+  GrowingLettuce2: {fileID: 2707653860121516269}
+  GrowingLettuce3: {fileID: 1661834904629984182}

@@ -50,7 +50,6 @@ public class UIManager : MonoBehaviour
     private List<Laboratory> laboratory = new List<Laboratory>();
 
     [SerializeField] private List<Slot> slots = new List<Slot>();
-    [SerializeField] private List<GameObject> UIslot = new List<GameObject>();
     [SerializeField] private List<Inventory> inventorys = new List<Inventory>();
     [SerializeField] private GameObject Cultivation_Menu_Object;
 
@@ -106,6 +105,20 @@ public class UIManager : MonoBehaviour
 
         StorageSlot.Add("lettuce", Lettuce_Slot);
         StorageSlot.Add("rotten", Rotten_Slot);
+    }
+
+    public void Auction_Init(Dictionary<string, int> crops)
+    {
+        GameObject temp;
+        foreach(var price in crops)
+        {
+            temp = Notice_Board.transform.Find(price.Key).transform.GetChild(0).GetChild(0).gameObject;
+            TMP_Text p = temp.GetComponent<TMP_Text>();
+            if (p != null)
+            {
+                p.text = price.Value.ToString();
+            }
+        }
     }
 
     public void Open_Cultivation_Menu()

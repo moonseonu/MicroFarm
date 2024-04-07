@@ -16,13 +16,13 @@ public class FieldManager : MonoBehaviour
 
     [SerializeField] private GameObject Lettuce;
 
-    [SerializeField] private Sprite GrowingLettuce1;
-    [SerializeField] private Sprite GrowingLettuce2;
-    [SerializeField] private Sprite GrowingLettuce3;
+    //[SerializeField] private Sprite GrowingLettuce1;
+    //[SerializeField] private Sprite GrowingLettuce2;
+    //[SerializeField] private Sprite GrowingLettuce3;
 
-    [SerializeField] private GameObject GrowingLettuce11;
-    [SerializeField] private GameObject GrowingLettuce22;
-    [SerializeField] private GameObject GrowingLettuce33;
+    [SerializeField] private GameObject GrowingLettuce1;
+    [SerializeField] private GameObject GrowingLettuce2;
+    [SerializeField] private GameObject GrowingLettuce3;
 
     private bool isHarvest;
     private bool isMenu;
@@ -69,17 +69,17 @@ public class FieldManager : MonoBehaviour
         if (time >= TimeSpan.FromSeconds(Grow_Time[type] * 1 / 3))
         {
             Lettuce.SetActive(true);
-            GrowingLettuce11.SetActive(true);
+            GrowingLettuce1.SetActive(true);
         }
 
         if (time >= TimeSpan.FromSeconds(Grow_Time[type] * 2 / 3))
         {
-            GrowingLettuce22.SetActive(true);
+            GrowingLettuce2.SetActive(true);
         }
 
         if (time >= TimeSpan.FromSeconds(Grow_Time[type]))
         {
-            GrowingLettuce33.SetActive(true);
+            GrowingLettuce3.SetActive(true);
             isHarvest = true;
         }
     }
@@ -156,9 +156,9 @@ public class FieldManager : MonoBehaviour
                     if (hit.collider.gameObject == gameObject)
                     {
 
-                        GrowingLettuce11.SetActive(false);
-                        GrowingLettuce22.SetActive(false);
-                        GrowingLettuce33.SetActive(false);
+                        GrowingLettuce1.SetActive(false);
+                        GrowingLettuce2.SetActive(false);
+                        GrowingLettuce3.SetActive(false);
                         Lettuce.SetActive(false);
                         GameManager.instance.HarvestCrops("lettuce");
                         isHarvest = false;
@@ -179,15 +179,15 @@ public class FieldManager : MonoBehaviour
             {
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3))
                 {
-                    GrowingLettuce11.SetActive(true);
+                    GrowingLettuce1.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3))
                 {
-                    GrowingLettuce22.SetActive(true);
+                    GrowingLettuce2.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"]))
                 {
-                    GrowingLettuce33.SetActive(true);
+                    GrowingLettuce3.SetActive(true);
                     isHarvest = true;
                 }
             }
@@ -196,15 +196,15 @@ public class FieldManager : MonoBehaviour
             {
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3 * 1 / 2))
                 {
-                    GrowingLettuce11.SetActive(true);
+                    GrowingLettuce1.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3 * 1 / 2))
                 {
-                    GrowingLettuce22.SetActive(true);
+                    GrowingLettuce2.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 2))
                 {
-                    GrowingLettuce33.SetActive(true);
+                    GrowingLettuce3.SetActive(true);
                     isHarvest = true;
                 }
             }
