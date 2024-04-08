@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -361,24 +362,27 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(0))
         {
-            Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
-
-            if (hit.collider != null)
+            if (!EventSystem.current.IsPointerOverGameObject())
             {
-                if (hit.collider.gameObject == Laboratory)
-                {
-                    ui.Laboratory_Open();
-                }
+                Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
 
-                else if(hit.collider.gameObject == Fertilizer_Facility)
+                if (hit.collider != null)
                 {
+                    if (hit.collider.gameObject == Laboratory)
+                    {
+                        ui.Laboratory_Open();
+                    }
 
-                }
+                    else if (hit.collider.gameObject == Fertilizer_Facility)
+                    {
 
-                else if(hit.collider.gameObject == Storage)
-                {
-                    ui.StorageInstance();
+                    }
+
+                    else if (hit.collider.gameObject == Storage)
+                    {
+                        ui.StorageInstance();
+                    }
                 }
             }
         }
