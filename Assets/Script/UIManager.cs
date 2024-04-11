@@ -44,7 +44,9 @@ public class UIManager : MonoBehaviour
     {
         public string name;
         public int quantity;
+        public int sample_quantity;
         public TMP_Text quantity_text;
+        public TMP_Text sample_quantity_text;
     }
 
     private List<Laboratory> laboratory = new List<Laboratory>();
@@ -177,6 +179,9 @@ public class UIManager : MonoBehaviour
             case "close lab":
                 Laboratory_Board.SetActive(false);
                 break;
+
+            case "culture a":
+                break;
         }
     }
 
@@ -196,15 +201,16 @@ public class UIManager : MonoBehaviour
         Laboratory_Board.SetActive(true);
     }
 
-    public void Laboratory_Manager(int microbe1, int microbe2, int microbe3)
+    public void Laboratory_Manager(int microbe1, int microbe2, int microbe3, int sample1, int sample2, int sample3, int isInit)
     {
-        Laboratory lab1 = new Laboratory { name = "microbe1", quantity = microbe1 };
-        Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2 };
-        Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3 };
+        Laboratory lab1 = new Laboratory { name = "microbe1", quantity = microbe1, sample_quantity = sample1 };
+        Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2, sample_quantity = sample2 };
+        Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3, sample_quantity = sample3 };
 
-        UpdateText(lab1.quantity, lab1.quantity_text, Laboratory_Board, lab1.name, 0);
-        UpdateText(lab2.quantity, lab2.quantity_text, Laboratory_Board, lab2.name, 0);
-        UpdateText(lab3.quantity, lab3.quantity_text, Laboratory_Board, lab3.name, 0);
+        UpdateText(lab1.quantity, lab1.sample_quantity, lab1.quantity_text, lab1.sample_quantity_text, Laboratory_Board, lab1.name, isInit);
+        UpdateText(lab2.quantity, lab2.sample_quantity, lab2.quantity_text, lab2.sample_quantity_text, Laboratory_Board, lab2.name, isInit);
+        UpdateText(lab3.quantity, lab3.sample_quantity, lab3.quantity_text, lab3.sample_quantity_text, Laboratory_Board, lab3.name, isInit);
+
         laboratory.Add(lab1);
         laboratory.Add(lab2);
         laboratory.Add(lab3);
@@ -215,15 +221,18 @@ public class UIManager : MonoBehaviour
         Laboratory Exist = laboratory.Find(Exist => Exist.name == name);
         if (Exist != null)
         {
-            UpdateText(Exist.quantity, Exist.quantity_text, Laboratory_Board, name, num);
+            UpdateText(Exist.quantity, Exist.sample_quantity, Exist.quantity_text, Exist.sample_quantity_text, Laboratory_Board, name, num);
         }
     }
 
-    private void UpdateText(int quantity, TMP_Text text, GameObject go, string name, int num)
+    private void UpdateText(int quantity, int sample_quantity, TMP_Text text, TMP_Text sample_text, GameObject go, string name, int num)
     {
         quantity += num;
         text = go.transform.Find(name).transform.Find("Count").GetComponent< TMP_Text>();
         text.text = quantity.ToString();
+
+        sample_text = go.transform.Find(name).transform.Find("Sample Count").transform.Find("Count").GetComponent<TMP_Text>();
+        sample_text.text = sample_quantity.ToString();
     }
 
     public void IsUsedItem(bool isUsed, GameObject item)

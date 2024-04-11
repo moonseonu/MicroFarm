@@ -193,6 +193,10 @@ public class GameManager : MonoBehaviour
             data.Microbe.Add("microbe2", 0);
             data.Microbe.Add("microbe3", 0);
 
+            data.Microbe.Add("microbe1 sample", 0);
+            data.Microbe.Add("microbe2 sample", 0);
+            data.Microbe.Add("microbe3 sample", 0);
+
             data.storage_count = 50;
             data.fieldCount = 9;
         }
@@ -435,8 +439,8 @@ public class GameManager : MonoBehaviour
         int random = UnityEngine.Random.Range(0, 1);
         if(random == 0)
         {
-            data.Microbe["microbe1"] += 1;
-            ui.Update_Lab("microbe1", 1);
+            data.Microbe["microbe1 sample"] += 1;
+            ui.Update_Lab("microbe1 sample", 1);
         }
     }
 
@@ -510,7 +514,8 @@ public class GameManager : MonoBehaviour
 
     private void Microbe_Init()
     {
-        ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"]);
+        ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"], 
+            data.Microbe["microbe1 sample"], data.Microbe["microbe2 sample"], data.Microbe["microbe3 sample"], 0);
     }
 
     float GeneratePriceFluctuations()
