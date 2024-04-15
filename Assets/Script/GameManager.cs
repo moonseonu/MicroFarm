@@ -26,6 +26,11 @@ public class GameManager : MonoBehaviour
         public DateTime start_time;
         public int count;
     }
+    private class QueueData
+    {
+        public string microbe;
+        public DateTime start_time;
+    }
     private class Data
     {
         public string name;
@@ -44,8 +49,10 @@ public class GameManager : MonoBehaviour
         public Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
         public Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
         public Dictionary<string, int> Microbe = new Dictionary<string, int>();
+        public Dictionary<string, int> Production_Microbe = new Dictionary<string, int>();
 
         public List<FieldData> fieldDatas = new List<FieldData>();
+        public List<QueueData> microbeQueue = new List<QueueData>();
         public int fieldCount;
     }
     Data data;
@@ -193,9 +200,11 @@ public class GameManager : MonoBehaviour
             data.Microbe.Add("microbe2", 0);
             data.Microbe.Add("microbe3", 0);
 
-            data.Microbe.Add("microbe1 sample", 0);
-            data.Microbe.Add("microbe2 sample", 0);
-            data.Microbe.Add("microbe3 sample", 0);
+            data.Microbe.Add("Sample1", 0);
+            data.Microbe.Add("Sample2", 0);
+            data.Microbe.Add("Sample3", 0);
+
+            data.Production_Microbe.Add("product1", 0);
 
             data.storage_count = 50;
             data.fieldCount = 9;
@@ -214,6 +223,7 @@ public class GameManager : MonoBehaviour
         InitStorage();
         InstanceField();
         Microbe_Init();
+
 
         cultivate.Add("lettuce", false);
         cultivate.Add("microbe1", false);
@@ -251,7 +261,6 @@ public class GameManager : MonoBehaviour
                         FieldData NewData = new FieldData { field_num = fieldNum , type = "", microbe = ""};
                         data.fieldDatas.Add(NewData);
                         fm.Init(fieldNum);
-                        Debug.Log("fdafd");
                     }
 
                     else if(ExistFieldData != null && ExistFieldData.type == "" && ExistFieldData.microbe == "")
@@ -263,14 +272,12 @@ public class GameManager : MonoBehaviour
                     {
                         TimeSpan time = DateTime.Now - ExistFieldData.start_time;
                         fm.Init(fieldNum, ExistFieldData.type, ExistFieldData.microbe ,time);
-                        Debug.Log(time);
                     }
 
                     else if (ExistFieldData != null && ExistFieldData.type != "" && ExistFieldData.microbe == "")
                     {
                         TimeSpan time = DateTime.Now - ExistFieldData.start_time;
                         fm.Init(fieldNum, ExistFieldData.type, ExistFieldData.microbe, time);
-                        Debug.Log(time);
                     }
 
                     fieldNum++;
@@ -298,7 +305,6 @@ public class GameManager : MonoBehaviour
 
     private void AuctionPricing()
     {
-        //data.AuctionPrice["lettuce"] = UnityEngine.Random.Range(30, 150);
         data.AuctionPrice["lettuce"] = (int)GeneratePriceFluctuations();
         Debug.Log(data.AuctionPrice["lettuce"]);
         data.AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
@@ -439,8 +445,8 @@ public class GameManager : MonoBehaviour
         int random = UnityEngine.Random.Range(0, 1);
         if(random == 0)
         {
-            data.Microbe["microbe1 sample"] += 1;
-            ui.Update_Lab("microbe1 sample", 1);
+            data.Microbe["Sample1"] += 1;
+            ui.Update_Lab("Sample1", 1);
         }
     }
 
@@ -515,7 +521,21 @@ public class GameManager : MonoBehaviour
     private void Microbe_Init()
     {
         ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"], 
-            data.Microbe["microbe1 sample"], data.Microbe["microbe2 sample"], data.Microbe["microbe3 sample"], 0);
+            data.Microbe["Sample1"], data.Microbe["Sample2"], data.Microbe["Sample3"], 0);
+    }
+
+    public bool MicrobeQueueManager(GameObject type)
+    {
+        if (data.Microbe[type.name] > 0 && data.microbeQueue.Count < 11)
+        {
+            QueueData NewData = new QueueData { microbe =  type.name, start_time = DateTime.Now };
+            data.microbeQueue.Add(NewData);
+            data.Microbe[type.name]--;
+
+            return true;
+        }
+
+        else return false;
     }
 
     float GeneratePriceFluctuations()

@@ -74,6 +74,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Dictionary<string, GameObject> StorageSlot = new Dictionary<string, GameObject>();
 
     [SerializeField] private List<GameObject> inventory_List;
+    [SerializeField] private List<GameObject> production_microbe;
+    [SerializeField] private GameObject Lab_Production_Content;
 
     // Start is called before the first frame update
     void Start()
@@ -181,6 +183,7 @@ public class UIManager : MonoBehaviour
                 break;
 
             case "culture a":
+                Production_Microbe(production_microbe[0]);
                 break;
         }
     }
@@ -386,7 +389,6 @@ public class UIManager : MonoBehaviour
                 {
                     if (Bag_Content.transform.GetChild(i).childCount == 0)
                     {
-
                         temp = Instantiate(item);
                         temp.transform.parent = Bag_Content.transform.GetChild(i).transform;
                         break;
@@ -487,7 +489,6 @@ public class UIManager : MonoBehaviour
     private void SellCrop(string name, int num)
     {
         GameManager.instance.Selling(name, num);
-
     }
 
     /// <summary>
@@ -525,6 +526,16 @@ public class UIManager : MonoBehaviour
                 Existslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                 Existslot.quantity_text.text = Existslot.quantity.ToString();
             }
+        }
+    }
+
+    private void Production_Microbe(GameObject name)
+    {
+        if (GameManager.instance.MicrobeQueueManager(name))
+        {
+            GameObject temp = Instantiate(name);
+            temp.transform.parent = Lab_Production_Content.transform;
+            Debug.Log("hghjk");
         }
     }
 }
