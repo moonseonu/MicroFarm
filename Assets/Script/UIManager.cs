@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using System;
 
 public class UIManager : MonoBehaviour
 {
@@ -109,6 +110,10 @@ public class UIManager : MonoBehaviour
 
         StorageSlot.Add("lettuce", Lettuce_Slot);
         StorageSlot.Add("rotten", Rotten_Slot);
+
+
+        //미생물 배양 초기화
+
     }
 
     public void Auction_Init(Dictionary<string, int> crops)
@@ -209,14 +214,23 @@ public class UIManager : MonoBehaviour
         Laboratory lab1 = new Laboratory { name = "microbe1", quantity = microbe1, sample_quantity = sample1 };
         Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2, sample_quantity = sample2 };
         Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3, sample_quantity = sample3 };
-
         UpdateText(lab1.quantity, lab1.sample_quantity, lab1.quantity_text, lab1.sample_quantity_text, Laboratory_Board, lab1.name, isInit);
-        UpdateText(lab2.quantity, lab2.sample_quantity, lab2.quantity_text, lab2.sample_quantity_text, Laboratory_Board, lab2.name, isInit);
-        UpdateText(lab3.quantity, lab3.sample_quantity, lab3.quantity_text, lab3.sample_quantity_text, Laboratory_Board, lab3.name, isInit);
-
+        //UpdateText(lab2.quantity, lab2.sample_quantity, lab2.quantity_text, lab2.sample_quantity_text, Laboratory_Board, lab2.name, isInit);
+        //UpdateText(lab3.quantity, lab3.sample_quantity, lab3.quantity_text, lab3.sample_quantity_text, Laboratory_Board, lab3.name, isInit);
         laboratory.Add(lab1);
-        laboratory.Add(lab2);
-        laboratory.Add(lab3);
+        //laboratory.Add(lab2);
+        //laboratory.Add(lab3);
+    }
+
+    public void Laboratory_Manager(string microbe_name, int num)
+    {
+        Laboratory ExistLab = laboratory.Find(ExistLab => ExistLab.name == microbe_name);
+        if(ExistLab != null)
+        {
+            ExistLab.quantity += num;
+            ExistLab.quantity_text = Laboratory_Board.transform.Find(microbe_name).transform.Find("Count").GetComponent<TMP_Text>();
+            ExistLab.quantity_text.text = ExistLab.quantity.ToString();
+        }
     }
 
     public void Update_Lab(string name, int num)
@@ -233,7 +247,6 @@ public class UIManager : MonoBehaviour
         quantity += num;
         text = go.transform.Find(name).transform.Find("Count").GetComponent< TMP_Text>();
         text.text = quantity.ToString();
-
         sample_text = go.transform.Find(name).transform.Find("Sample Count").transform.Find("Count").GetComponent<TMP_Text>();
         sample_text.text = sample_quantity.ToString();
     }
@@ -535,7 +548,37 @@ public class UIManager : MonoBehaviour
         {
             GameObject temp = Instantiate(name);
             temp.transform.parent = Lab_Production_Content.transform;
-            Debug.Log("hghjk");
+            CultureManager cm = temp.GetComponent<CultureManager>();
+            cm.type = name.name;
+
+            Laboratory ExistLab = laboratory.Find(ExistLab => ExistLab.name == GameManager.instance.keyValuePairs[name.name]);
+            if(ExistLab != null)
+            {
+                ExistLab.sample_quantity--;
+                TMP_Text sample_text = Laboratory_Board.transform.Find(ExistLab.name).transform.Find("Sample Count").transform.Find("Count").GetComponent<TMP_Text>();
+                sample_text.text = ExistLab.sample_quantity.ToString();
+            }
         }
+    }
+
+    public void InitProduction_Microbe(string name)
+    {
+        for(int i = 0; i < production_microbe.Count; i++)
+        {
+            if(name == production_microbe[i].name)
+            {
+                GameObject temp = Instantiate(production_microbe[i]);
+                temp.transform.parent = Lab_Production_Content.transform;
+                CultureManager cm = temp.GetComponent<CultureManager>();
+                cm.type = name;
+            }
+        }
+    }
+
+    public void ComplieteCulture(string type, int num)
+    {
+        GameObject temp = Lab_Production_Content.transform.GetChild(0).gameObject;
+        Destroy(temp);
+        Laboratory_Manager(type, num);
     }
 }

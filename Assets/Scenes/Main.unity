@@ -4523,8 +4523,6 @@ MonoBehaviour:
   inventory_List: []
   production_microbe:
   - {fileID: 1794331469745654934, guid: d4c9660ac5e225847a9de36fbac1ce97, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
   Lab_Production_Content: {fileID: 1529415932}
 --- !u!114 &977407379
 MonoBehaviour:
@@ -7411,7 +7409,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1813330455
 RectTransform:
   m_ObjectHideFlags: 0

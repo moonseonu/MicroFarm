@@ -89,6 +89,13 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int gameMoney;
     [SerializeField] private bool useItem;
+
+    /// <summary>
+    /// 좌표 만들기용 딕셔너리
+    /// </summary>
+
+    public Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+
     public int Storage_Count
     {
         get { return data.storage_count; }
@@ -209,25 +216,27 @@ public class GameManager : MonoBehaviour
             data.storage_count = 50;
             data.fieldCount = 9;
         }
+        keyValuePairs.Add("Sample1", "microbe1");
+        keyValuePairs.Add("Sample2", "microbe2");
+        keyValuePairs.Add("Sample3", "microbe3");
 
         GameMoney = data.money;
         ui.ui.Name = data.name;
         ui.ui.Money = data.money;
-
-        if(data.currentday != dt.Day)
-        {
-            AuctionPricing();
-        }
         ui.Auction_Init(data.AuctionPrice);
         InitInventory();
         InitStorage();
         InstanceField();
         Microbe_Init();
 
-
         cultivate.Add("lettuce", false);
         cultivate.Add("microbe1", false);
         cultivate.Add("fertilizer", false);
+
+        if (data.currentday != dt.Day)
+        {
+            AuctionPricing();
+        }
     }
 
     private void SaveData()
@@ -520,15 +529,62 @@ public class GameManager : MonoBehaviour
 
     private void Microbe_Init()
     {
+        //미생물 배양중인거 있을 때
+        ///
+        /// 나우를 박았을 경우 대기열 4개일 때
+        /// 40분 나우 , null, null, null일 텐데
+        /// 15분 뒤에 접속을 하면
+        /// 첫번째거 클리어 남은 값 5분 현재시간은 55분이지만 == 50분 나우 ,null ,null
+        ///
+        if (data.microbeQueue.Count != 0)
+        {
+            TimeSpan timeSpan;
+            timeSpan = DateTime.Now - data.microbeQueue[0].start_time;
+
+            if (data.microbeQueue[0].microbe == "Sample1")
+            {
+                if (timeSpan.TotalSeconds >= 60)
+                {
+                    data.Microbe[keyValuePairs[data.microbeQueue[0].microbe]]++;
+                    data.microbeQueue.RemoveAt(0);
+                    timeSpan -= TimeSpan.FromSeconds(60);
+                    CultureInit(timeSpan);
+                }
+            }
+
+        }
+        for(int i = 0; i < data.microbeQueue.Count; i++)
+        {
+            ui.InitProduction_Microbe(data.microbeQueue[i].microbe);
+        }
         ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"], 
             data.Microbe["Sample1"], data.Microbe["Sample2"], data.Microbe["Sample3"], 0);
+    }
+
+    private void CultureInit(TimeSpan ts)
+    {
+        if (data.microbeQueue[0].microbe == "Sample1")
+        {
+            if (ts.TotalSeconds >= 60)
+            {
+                data.Microbe[keyValuePairs[data.microbeQueue[0].microbe]]++;
+                data.microbeQueue.RemoveAt(0);
+                ts -= TimeSpan.FromSeconds(60);
+                CultureInit(ts);
+            }
+
+            else if (ts.TotalSeconds < 60 && ts.TotalSeconds > 0)
+            {
+                data.microbeQueue[0].start_time = DateTime.Now.Subtract(ts);
+            }
+        }
     }
 
     public bool MicrobeQueueManager(GameObject type)
     {
         if (data.Microbe[type.name] > 0 && data.microbeQueue.Count < 11)
         {
-            QueueData NewData = new QueueData { microbe =  type.name, start_time = DateTime.Now };
+            QueueData NewData = new QueueData { microbe =  type.name};
             data.microbeQueue.Add(NewData);
             data.Microbe[type.name]--;
 
@@ -536,6 +592,31 @@ public class GameManager : MonoBehaviour
         }
 
         else return false;
+    }
+
+    public void UpdateCulture(string type)
+    {
+        QueueData ExistData = data.microbeQueue.Find(ExistData => ExistData.microbe == type);
+        if(ExistData != null)
+        {
+            if(ExistData == data.microbeQueue[0])
+            {
+                DateTime defaultDateTime = new DateTime();
+                if(ExistData.start_time == defaultDateTime)
+                {
+                    ExistData.start_time = DateTime.Now;
+                }
+                TimeSpan timeSpan = DateTime.Now - ExistData.start_time;
+
+                if(timeSpan >= TimeSpan.FromSeconds(60))
+                {
+                    data.Microbe[keyValuePairs[type]]++;
+                    data.microbeQueue.RemoveAt(0);
+                    //ui.Laboratory_Manager(keyValuePairs[type], 1);
+                    ui.ComplieteCulture(keyValuePairs[type], 1);
+                }
+            }
+        }
     }
 
     float GeneratePriceFluctuations()
