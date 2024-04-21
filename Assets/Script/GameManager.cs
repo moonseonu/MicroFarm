@@ -184,6 +184,8 @@ public class GameManager : MonoBehaviour
             filePath = Application.persistentDataPath + "/userdata.json";
             File.WriteAllText(filePath, saveData);
 
+            data.money = 5000;
+
             data.CropsLevel.Add("lettuce", 1);
             data.CropsLevel.Add("spinach", 1);
             data.CropsLevel.Add("garlic", 1);
@@ -482,17 +484,23 @@ public class GameManager : MonoBehaviour
 
     public void Selling(string name, int num)
     {
-        ui.UpdateStorage(name, num);
-        data.CropWarehouse[name] -= num;
-        GameMoney += num * data.AuctionPrice[name];
-        ui.ui.Money = GameMoney;
+        if (data.CropWarehouse[name] > 0)
+        {
+            ui.UpdateStorage(name, num);
+            data.CropWarehouse[name] -= num;
+            GameMoney += num * data.AuctionPrice[name];
+            ui.ui.Money = GameMoney;
+        }
     }
 
     public void Buying(string name, int num)
     {
-        AddInventory(name);
-        GameMoney -= num * data.SeedPrice[name];
-        ui.ui.Money = GameMoney;
+        if (GameMoney >= data.AuctionPrice[name])
+        {
+            AddInventory(name);
+            GameMoney -= num * data.SeedPrice[name];
+            ui.ui.Money = GameMoney;
+        }
     }
 
     public TimeSpan Growth_Time_Manager(string name, int num)

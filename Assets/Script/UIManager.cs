@@ -100,14 +100,14 @@ public class UIManager : MonoBehaviour
     {
         GameObject temp = null;
         //창고 인벤토리
-        for(int i = 0; i < 50; i++)
+        for (int i = 0; i < 50; i++)
         {
             temp = Instantiate(Empty_Slot);
             temp.transform.parent = Storage_Inven.transform;
         }
 
         //가방 인벤토리
-        for(int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; i++)
         {
             temp = Instantiate(Empty_Slot);
             temp.transform.parent = Bag_Content.transform;
@@ -124,7 +124,7 @@ public class UIManager : MonoBehaviour
     public void Auction_Init(Dictionary<string, int> crops)
     {
         GameObject temp;
-        foreach(var price in crops)
+        foreach (var price in crops)
         {
             temp = Notice_Board.transform.Find(price.Key).transform.GetChild(0).GetChild(0).gameObject;
             TMP_Text p = temp.GetComponent<TMP_Text>();
@@ -231,7 +231,7 @@ public class UIManager : MonoBehaviour
     public void Laboratory_Manager(string microbe_name, int num)
     {
         Laboratory ExistLab = laboratory.Find(ExistLab => ExistLab.name == microbe_name);
-        if(ExistLab != null)
+        if (ExistLab != null)
         {
             ExistLab.quantity += num;
             ExistLab.quantity_text = Laboratory_Board.transform.Find(microbe_name).transform.Find("Count").GetComponent<TMP_Text>();
@@ -251,7 +251,7 @@ public class UIManager : MonoBehaviour
     private void UpdateText(int quantity, int sample_quantity, TMP_Text text, TMP_Text sample_text, GameObject go, string name, int num)
     {
         quantity += num;
-        text = go.transform.Find(name).transform.Find("Count").GetComponent< TMP_Text>();
+        text = go.transform.Find(name).transform.Find("Count").GetComponent<TMP_Text>();
         text.text = quantity.ToString();
         sample_text = go.transform.Find(name).transform.Find("Sample Count").transform.Find("Count").GetComponent<TMP_Text>();
         sample_text.text = sample_quantity.ToString();
@@ -267,7 +267,7 @@ public class UIManager : MonoBehaviour
 
         else
         {
-            GameManager.instance.UseItem= false;
+            GameManager.instance.UseItem = false;
             GameManager.instance.IsUsedItem("");
         }
     }
@@ -275,7 +275,7 @@ public class UIManager : MonoBehaviour
     private void MakeSlot(string name, int num)
     {
         GameObject temp = null;
-        if(num != 1)
+        if (num != 1)
         {
             for (int i = 0; i < GameManager.instance.Storage_Count; i++)
             {
@@ -314,7 +314,7 @@ public class UIManager : MonoBehaviour
         }
         if (num > 2)
             MakeSlot(name, num);
-        else if(num == 1)
+        else if (num == 1)
             MakeSlot(name, 1);
     }
 
@@ -357,7 +357,7 @@ public class UIManager : MonoBehaviour
                 {
                     if (num <= 2)
                     {
-                        if(num != 0)
+                        if (num != 0)
                         {
                             for (int i = 0; i < GameManager.instance.Storage_Count; i++)
                             {
@@ -373,7 +373,7 @@ public class UIManager : MonoBehaviour
                             Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                             Newslot.quantity_text.text = Newslot.quantity.ToString();
                         }
-                      
+
                     }
 
                     else
@@ -398,7 +398,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            if(!isInit)
+            if (!isInit)
             {
                 Inventory Newinven = new Inventory { item = item, quantity = 1 };
                 inventorys.Add(Newinven);
@@ -424,7 +424,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                if(num != 0)
+                if (num != 0)
                 {
                     Inventory Newinven = new Inventory { item = item, quantity = num };
                     inventorys.Add(Newinven);
@@ -449,14 +449,14 @@ public class UIManager : MonoBehaviour
                         Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
                     }
                 }
-                
+
             }
         }
     }
 
     private void IsFreshSlot()
     {
-        for(int i = 0; i <  slots.Count; i++)
+        for (int i = 0; i < slots.Count; i++)
         {
             if (slots[i].item.name == Lettuce_Slot.name)
             {
@@ -477,15 +477,15 @@ public class UIManager : MonoBehaviour
 
     public void UseItem(string name, int num)
     {
-        for(int i = 0; i < inventorys.Count; i++)
+        for (int i = 0; i < inventorys.Count; i++)
         {
-            for(int j = 0; j < inventory_List.Count; j++)
+            for (int j = 0; j < inventory_List.Count; j++)
             {
                 if (inventorys[i].item.name == inventory_List[j].name)
                 {
                     if (inventorys[i].quantity <= num)
                     {
-                        Transform removeitem = Bag_Content.transform.GetChild(i+1).GetChild(0);
+                        Transform removeitem = Bag_Content.transform.GetChild(i + 1).GetChild(0);
                         Destroy(removeitem.gameObject);
                         inventorys.RemoveAt(i);
                     }
@@ -495,7 +495,7 @@ public class UIManager : MonoBehaviour
                         inventorys[i].quantity_text.text = inventorys[i].quantity.ToString();
                         if (inventorys[i].quantity == 0)
                         {
-                            Transform removeitem = Bag_Content.transform.GetChild(i+1).GetChild(0);
+                            Transform removeitem = Bag_Content.transform.GetChild(i + 1).GetChild(0);
                             Destroy(removeitem.gameObject);
                             inventorys.RemoveAt(i);
                         }
@@ -558,7 +558,7 @@ public class UIManager : MonoBehaviour
             cm.type = name.name;
 
             Laboratory ExistLab = laboratory.Find(ExistLab => ExistLab.name == GameManager.instance.keyValuePairs[name.name]);
-            if(ExistLab != null)
+            if (ExistLab != null)
             {
                 ExistLab.sample_quantity--;
                 TMP_Text sample_text = Laboratory_Board.transform.Find(ExistLab.name).transform.Find("Sample Count").transform.Find("Count").GetComponent<TMP_Text>();
@@ -569,9 +569,9 @@ public class UIManager : MonoBehaviour
 
     public void InitProduction_Microbe(string name)
     {
-        for(int i = 0; i < production_microbe.Count; i++)
+        for (int i = 0; i < production_microbe.Count; i++)
         {
-            if(name == production_microbe[i].name)
+            if (name == production_microbe[i].name)
             {
                 GameObject temp = Instantiate(production_microbe[i]);
                 temp.transform.parent = Lab_Production_Content.transform;
@@ -603,6 +603,7 @@ public class UIManager : MonoBehaviour
         {
             float xPos = start_Pos + i * xInterval;
             float yPos = (float)data[i] / maxDataValue * max_Posy;
+
             positions[i] = new Vector3(xPos, yPos, 0f);
 
             GameObject point = Instantiate(GraphDot, Graph_Back.rectTransform);
@@ -616,5 +617,37 @@ public class UIManager : MonoBehaviour
         lineRenderer.startWidth = 20f;
         lineRenderer.endWidth = 20f;
 
+        //Texture2D texture = LineToTexture(positions);
+        //Graph_Back.texture = texture;
+    }
+
+    private Texture2D LineToTexture(Vector3[] positions)
+    {
+        float width = Graph_Back.rectTransform.rect.width;
+        float height = Graph_Back.rectTransform.rect.height;
+        Texture2D texture = new Texture2D((int)width, (int)height);
+
+        for(int i = 0; i < positions.Length - 1; i++)
+        {
+            Vector3 start = positions[i];
+            Vector3 end = positions[i + 1];
+
+            Vector3 len_dir = end - start;
+            float inclination = len_dir.y / len_dir.x;
+
+            for(int x = (int)start.x; x < (int)end.x; x++)
+            {
+                int y = (int)(start.y + inclination * (x - start.x));
+                for(int j = 0; j < y; j++)
+                {
+                    if(x >= 0 && x < texture.width && y >= 0 && y < texture.height)
+                    {
+                        texture.SetPixel(x, j, Color.red);
+                    }
+                }
+            }
+        }
+        texture.Apply();
+        return texture;
     }
 }
