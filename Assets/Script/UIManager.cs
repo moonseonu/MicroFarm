@@ -78,6 +78,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private List<GameObject> production_microbe;
     [SerializeField] private GameObject Lab_Production_Content;
 
+    //주식 그래프 부분
+    [SerializeField] private LineRenderer line;
+    [SerializeField] private RawImage Graph_Back;
+    [SerializeField] private GameObject GraphDot;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -173,6 +178,7 @@ public class UIManager : MonoBehaviour
 
             case "notice board open":
                 Notice_Board.SetActive(true);
+                DrawGraph();
                 break;
 
             case "notice board close":
@@ -580,5 +586,35 @@ public class UIManager : MonoBehaviour
         GameObject temp = Lab_Production_Content.transform.GetChild(0).gameObject;
         Destroy(temp);
         Laboratory_Manager(type, num);
+    }
+
+    private void DrawGraph()
+    {
+        int[] data = GameManager.instance.GetStockPrice("lettuce").ToArray();
+        Vector3[] positions = new Vector3[5];
+
+        float start_Pos = -Graph_Back.rectTransform.rect.width / 2;
+        float max_Posy = Graph_Back.rectTransform.rect.height / 2;
+
+        float xInterval = (float)Graph_Back.rectTransform.rect.width / (5 - 1);
+        float maxDataValue = Mathf.Max(data);
+
+        for (int i = 0; i < 5; i++)
+        {
+            float xPos = start_Pos + i * xInterval;
+            float yPos = (float)data[i] / maxDataValue * max_Posy;
+            positions[i] = new Vector3(xPos, yPos, 0f);
+
+            GameObject point = Instantiate(GraphDot, Graph_Back.rectTransform);
+            RectTransform pointTransform = point.GetComponent<RectTransform>();
+            pointTransform.anchoredPosition = new Vector2(xPos, yPos);
+        }
+
+        LineRenderer lineRenderer = line.GetComponent<LineRenderer>();
+        lineRenderer.positionCount = data.Length;
+        lineRenderer.SetPositions(positions);
+        lineRenderer.startWidth = 20f;
+        lineRenderer.endWidth = 20f;
+
     }
 }

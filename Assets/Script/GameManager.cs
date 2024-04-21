@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
         public string microbe;
         public DateTime start_time;
     }
+
     private class Data
     {
         public string name;
@@ -53,6 +54,7 @@ public class GameManager : MonoBehaviour
 
         public List<FieldData> fieldDatas = new List<FieldData>();
         public List<QueueData> microbeQueue = new List<QueueData>();
+        public Dictionary<string, Queue<int>> stockData = new Dictionary<string, Queue<int>>();
         public int fieldCount;
     }
     Data data;
@@ -215,6 +217,8 @@ public class GameManager : MonoBehaviour
 
             data.storage_count = 50;
             data.fieldCount = 9;
+
+            data.stockData["lettuce"] = new Queue<int>();
         }
         keyValuePairs.Add("Sample1", "microbe1");
         keyValuePairs.Add("Sample2", "microbe2");
@@ -314,10 +318,27 @@ public class GameManager : MonoBehaviour
 
     private void AuctionPricing()
     {
-        data.AuctionPrice["lettuce"] = (int)GeneratePriceFluctuations();
-        Debug.Log(data.AuctionPrice["lettuce"]);
+        //data.AuctionPrice["lettuce"] = (int)GeneratePriceFluctuations();
+        //data.stockData["lettuce"].Enqueue(data.AuctionPrice["lettuce"]);
+        DequeuePrice("lettuce");
+
         data.AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
         data.AuctionPrice["garlic"] = UnityEngine.Random.Range(500, 2500);
+    }
+
+    private void DequeuePrice(string name)
+    {
+        data.AuctionPrice[name] = (int)GeneratePriceFluctuations();
+        data.stockData[name].Enqueue(data.AuctionPrice[name]);
+        if(data.stockData.Count > 5)
+        {
+            data.stockData[name].Dequeue();
+        }
+    }
+
+    public Queue<int> GetStockPrice(string name)
+    {
+        return data.stockData[name];
     }
 
     private void TakeMoney(int money)
