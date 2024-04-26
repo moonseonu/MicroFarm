@@ -608,7 +608,8 @@ public class UIManager : MonoBehaviour
 
             GameObject point = Instantiate(GraphDot, Graph_Back.rectTransform);
             RectTransform pointTransform = point.GetComponent<RectTransform>();
-            pointTransform.anchoredPosition = new Vector2(xPos, yPos);
+            pointTransform.anchoredPosition = new Vector2(xPos, 0);
+            pointTransform.sizeDelta = new Vector2(xInterval * 0.4f, yPos);
         }
 
         LineRenderer lineRenderer = line.GetComponent<LineRenderer>();

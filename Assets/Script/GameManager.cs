@@ -6,6 +6,7 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -197,7 +198,7 @@ public class GameManager : MonoBehaviour
             data.Inventory.Add("spinach", 0);
             data.Inventory.Add("garlic", 0);
 
-            data.AuctionPrice.Add("lettuce", 0);
+            data.AuctionPrice.Add("lettuce", 100);
             data.AuctionPrice.Add("spinach", 0);
             data.AuctionPrice.Add("garlic", 0);
 
@@ -221,6 +222,14 @@ public class GameManager : MonoBehaviour
             data.fieldCount = 9;
 
             data.stockData["lettuce"] = new Queue<int>();
+            while (data.stockData["lettuce"].Count < 5)
+            {
+                if (data.stockData["lettuce"].Count == 5)
+                {
+                    data.stockData["lettuce"].Enqueue(100);
+                }
+                data.stockData["lettuce"].Enqueue(0);
+            }
         }
         keyValuePairs.Add("Sample1", "microbe1");
         keyValuePairs.Add("Sample2", "microbe2");
@@ -238,10 +247,13 @@ public class GameManager : MonoBehaviour
         cultivate.Add("lettuce", false);
         cultivate.Add("microbe1", false);
         cultivate.Add("fertilizer", false);
-
         if (data.currentday != dt.Day)
         {
-            AuctionPricing();
+            int difference = dt.Day - data.currentday;
+            while(difference > 0)
+            {
+                AuctionPricing();
+            }
         }
     }
 
@@ -332,9 +344,10 @@ public class GameManager : MonoBehaviour
     {
         data.AuctionPrice[name] = (int)GeneratePriceFluctuations();
         data.stockData[name].Enqueue(data.AuctionPrice[name]);
-        if(data.stockData.Count > 5)
+        if (data.stockData[name].Count > 4)
         {
             data.stockData[name].Dequeue();
+            Debug.Log(data.stockData[name].Count);
         }
     }
 
