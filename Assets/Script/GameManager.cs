@@ -45,13 +45,12 @@ public class GameManager : MonoBehaviour
         public float meanChange = 0.0f; // 주가 변동의 평균
         public float stdDeviation = 5.0f; // 주가 변동의 표준 편차
 
-        public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
+        //public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
         public Dictionary<string, int> Inventory = new Dictionary<string, int>();
         public Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
         public Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
         public Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
         public Dictionary<string, int> Microbe = new Dictionary<string, int>();
-        public Dictionary<string, int> Production_Microbe = new Dictionary<string, int>();
 
         public List<FieldData> fieldDatas = new List<FieldData>();
         public List<QueueData> microbeQueue = new List<QueueData>();
@@ -137,7 +136,6 @@ public class GameManager : MonoBehaviour
         if (instance != null) Destroy(gameObject);
         instance = this;
         DontDestroyOnLoad(gameObject);
-
         ui = GetComponent<UIManager>();
         ui.UI_Init();
         scene = CurrentScene.title;
@@ -146,19 +144,15 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        init();
         DateSet();
     }
 
     // Update is called once per frame
     void Update()
     {
-        init();
-        if (isInit)
-        {
-            OnClickConstruction();
-            SaveData();
-        }
+        SaveData();
+        OnClickConstruction();
     }
 
     private void SceneManager()
@@ -183,96 +177,85 @@ public class GameManager : MonoBehaviour
             {
                 string jsonData = File.ReadAllText(filePath);
                 data = JsonConvert.DeserializeObject<Data>(jsonData);
-                UI.SetActive(true);
-                GameObject title = GameObject.Find("TitleCanvas");
-                Destroy(title);
-                isInit = true;
+                //UI.SetActive(true);
+                //GameObject title = GameObject.Find("TitleCanvas");
+                //Destroy(title);
             }
             else
             {
-                //if (isinput)
-                //{
-                    UI.SetActive(true);
-                    GameObject title = GameObject.Find("TitleCanvas");
-                    Destroy(title);
-                    data = new Data();
-                    string saveData = JsonUtility.ToJson(data, true);
-                    filePath = Application.persistentDataPath + "/userdata.json";
-                    File.WriteAllText(filePath, saveData);
+                //UI.SetActive(true);
+                //GameObject title = GameObject.Find("TitleCanvas");
+                //Destroy(title);
+                data = new Data();
+                string saveData = JsonUtility.ToJson(data, true);
+                filePath = Application.persistentDataPath + "/userdata.json";
 
-                    data.name = inputname;
-                    data.money = 5000;
+                data.name = inputname;
+                data.money = 5000;
 
-                    data.CropsLevel.Add("lettuce", 1);
-                    data.CropsLevel.Add("spinach", 1);
-                    data.CropsLevel.Add("garlic", 1);
+                //data.CropsLevel.Add("lettuce", 1);
+                //data.CropsLevel.Add("spinach", 1);
+                //data.CropsLevel.Add("garlic", 1);
 
-                    data.Inventory.Add("promoter", 0);
-                    data.Inventory.Add("nutrients", 0);
-                    data.Inventory.Add("Rertilizer", 0);
-                    data.Inventory.Add("lettuce", 0);
-                    data.Inventory.Add("spinach", 0);
-                    data.Inventory.Add("garlic", 0);
+                data.Inventory.Add("lettuce", 0);
+                data.Inventory.Add("spinach", 0);
+                data.Inventory.Add("garlic", 0);
 
-                    data.AuctionPrice.Add("lettuce", 100);
-                    data.AuctionPrice.Add("spinach", 0);
-                    data.AuctionPrice.Add("garlic", 0);
+                data.AuctionPrice.Add("lettuce", 100);
+                data.AuctionPrice.Add("spinach", 0);
+                data.AuctionPrice.Add("garlic", 0);
 
-                    data.SeedPrice.Add("lettuce", 10);
+                data.SeedPrice.Add("lettuce", 10);
 
-                    data.CropWarehouse.Add("lettuce", 0);
-                    data.CropWarehouse.Add("spinach", 0);
-                    data.CropWarehouse.Add("garlic", 0);
+                data.CropWarehouse.Add("lettuce", 0);
+                data.CropWarehouse.Add("spinach", 0);
+                data.CropWarehouse.Add("garlic", 0);
 
-                    data.Microbe.Add("microbe1", 1);
-                    data.Microbe.Add("microbe2", 0);
-                    data.Microbe.Add("microbe3", 0);
+                data.Microbe.Add("microbe1", 1);
+                data.Microbe.Add("microbe2", 0);
+                data.Microbe.Add("microbe3", 0);
 
-                    data.Microbe.Add("Sample1", 0);
-                    data.Microbe.Add("Sample2", 0);
-                    data.Microbe.Add("Sample3", 0);
+                //data.Microbe.Add("Sample1", 0);
+                //data.Microbe.Add("Sample2", 0);
+                //data.Microbe.Add("Sample3", 0);
 
-                    data.Production_Microbe.Add("product1", 0);
+                data.storage_count = 50;
+                data.fieldCount = 9;
 
-                    data.storage_count = 50;
-                    data.fieldCount = 9;
-
-                    data.stockData["lettuce"] = new Queue<int>();
-                    while (data.stockData["lettuce"].Count < 5)
+                data.stockData["lettuce"] = new Queue<int>();
+                while (data.stockData["lettuce"].Count < 5)
+                {
+                    if (data.stockData["lettuce"].Count == 5)
                     {
-                        if (data.stockData["lettuce"].Count == 5)
-                        {
-                            data.stockData["lettuce"].Enqueue(100);
-                        }
-                        data.stockData["lettuce"].Enqueue(0);
+                        data.stockData["lettuce"].Enqueue(100);
                     }
-                    keyValuePairs.Add("Sample1", "microbe1");
-                    keyValuePairs.Add("Sample2", "microbe2");
-                    keyValuePairs.Add("Sample3", "microbe3");
+                    data.stockData["lettuce"].Enqueue(0);
+                }
+                keyValuePairs.Add("Sample1", "microbe1");
+                keyValuePairs.Add("Sample2", "microbe2");
+                keyValuePairs.Add("Sample3", "microbe3");
 
-                    GameMoney = data.money;
-                    ui.ui.Name = data.name;
-                    ui.ui.Money = data.money;
-                    ui.Auction_Init(data.AuctionPrice);
-                    InitInventory();
-                    InitStorage();
-                    InstanceField();
-                    Microbe_Init();
+                GameMoney = data.money;
+                ui.ui.Name = data.name;
+                ui.ui.Money = data.money;
+                ui.Auction_Init(data.AuctionPrice);
+                InitInventory();
+                InitStorage();
+                InstanceField();
+                Microbe_Init();
 
-                    cultivate.Add("lettuce", false);
-                    cultivate.Add("microbe1", false);
-                    cultivate.Add("fertilizer", false);
-                    if (data.currentday != dt.Day)
+                cultivate.Add("lettuce", false);
+                cultivate.Add("microbe1", false);
+                cultivate.Add("fertilizer", false);
+                if (data.currentday != dt.Day)
+                {
+                    int difference = dt.Day - data.currentday;
+                    while (difference > 0)
                     {
-                        int difference = dt.Day - data.currentday;
-                        while (difference > 0)
-                        {
-                            AuctionPricing();
-                        }
+                        AuctionPricing();
                     }
-                    isInit = true;
-               // }
-
+                }
+                File.WriteAllText(filePath, saveData);
             }
         }
        
@@ -382,10 +365,10 @@ public class GameManager : MonoBehaviour
         GameMoney += money;
     }
 
-    private void CropsLevelUp(string name)
-    {
-        data.CropsLevel[name] += 1;
-    }
+    //private void CropsLevelUp(string name)
+    //{
+    //    data.CropsLevel[name] += 1;
+    //}
 
     public void AddInventory(string name)
     {
