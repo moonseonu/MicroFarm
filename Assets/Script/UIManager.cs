@@ -152,6 +152,17 @@ public class UIManager : MonoBehaviour
     {
         switch (name)
         {
+            case "name":
+                
+                TMP_InputField input = GameObject.Find("TitleCanvas").transform.Find("Name").GetComponent<TMP_InputField>();
+                Debug.Log(input);
+                if(input != null)
+                {
+                    Debug.Log("fdafsd");
+                    GameManager.instance.inputname = input.name;
+                    GameManager.instance.isinput = true;
+                }
+                break;
             case "bag close":
                 Bag_Content.SetActive(false);
                 break;
