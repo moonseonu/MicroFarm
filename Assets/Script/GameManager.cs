@@ -37,31 +37,26 @@ public class GameManager : MonoBehaviour
     {
         public string name;
         public int money;
-        public int startday;
-        public int currentday;
+        public int currentday = 0;
         public int storage_count;
+        public int fieldCount;
 
         public float basePrice = 100.0f; // 초기 주가
         public float meanChange = 0.0f; // 주가 변동의 평균
         public float stdDeviation = 5.0f; // 주가 변동의 표준 편차
 
-        //public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
+        public Dictionary<string, int> CropsLevel = new Dictionary<string, int>();
         public Dictionary<string, int> Inventory = new Dictionary<string, int>();
         public Dictionary<string, int> AuctionPrice = new Dictionary<string, int>();
         public Dictionary<string, int> SeedPrice = new Dictionary<string, int>();
         public Dictionary<string, int> CropWarehouse = new Dictionary<string, int>();
         public Dictionary<string, int> Microbe = new Dictionary<string, int>();
-
+        public Dictionary<string, int> Production_Microbe = new Dictionary<string, int>();
+        public Dictionary<string, Queue<int>> stockData = new Dictionary<string, Queue<int>>();
         public List<FieldData> fieldDatas = new List<FieldData>();
         public List<QueueData> microbeQueue = new List<QueueData>();
-        public Dictionary<string, Queue<int>> stockData = new Dictionary<string, Queue<int>>();
-        public int fieldCount;
     }
     Data data;
-    public bool isinput = false;
-    public string inputname;
-    private bool isInit = false;
-    string dataFileName = "data.json";
 
     private CurrentScene scene;
 
@@ -77,8 +72,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject Microbe2;
     [SerializeField] private GameObject Microbe3;
 
-    [SerializeField] private GameObject Promoter;
-    [SerializeField] private GameObject Nutrients;
     [SerializeField] private GameObject Fertilizer;
 
     [SerializeField] private GameObject Seed_Lt;
@@ -94,8 +87,6 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private int gameMoney;
     [SerializeField] private bool useItem;
-
-    [SerializeField] private GameObject UI;
 
     /// <summary>
     /// 좌표 만들기용 딕셔너리
@@ -136,6 +127,7 @@ public class GameManager : MonoBehaviour
         if (instance != null) Destroy(gameObject);
         instance = this;
         DontDestroyOnLoad(gameObject);
+
         ui = GetComponent<UIManager>();
         ui.UI_Init();
         scene = CurrentScene.title;
@@ -151,8 +143,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        SaveData();
         OnClickConstruction();
+        SaveData();
     }
 
     private void SceneManager()
@@ -169,102 +161,95 @@ public class GameManager : MonoBehaviour
 
     private void init()
     {
-        if (!isInit)
+        string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
+
+        if (File.Exists(filePath))
         {
-            string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
+            string jsonData = File.ReadAllText(filePath);
+            data = JsonConvert.DeserializeObject<Data>(jsonData);
+        }
+        else
+        {
+            data = new Data();
 
-            if (File.Exists(filePath))
+            data.money = 5000;
+
+            data.Inventory.Add("lettuce", 0);
+            data.Inventory.Add("spinach", 0);
+            data.Inventory.Add("garlic", 0);
+
+            data.AuctionPrice.Add("lettuce", 100);
+            data.AuctionPrice.Add("spinach", 0);
+            data.AuctionPrice.Add("garlic", 0);
+
+            data.SeedPrice.Add("lettuce", 10);
+
+            data.CropWarehouse.Add("lettuce", 0);
+            data.CropWarehouse.Add("spinach", 0);
+            data.CropWarehouse.Add("garlic", 0);
+
+            data.Microbe.Add("microbe1", 1);
+            data.Microbe.Add("microbe2", 0);
+            data.Microbe.Add("microbe3", 0);
+
+            data.Microbe.Add("Sample1", 1);
+            data.Microbe.Add("Sample2", 0);
+            data.Microbe.Add("Sample3", 0);
+
+            data.Production_Microbe.Add("product1", 0);
+
+            data.storage_count = 50;
+            data.fieldCount = 9;
+
+            data.stockData["lettuce"] = new Queue<int>();
+            while (data.stockData["lettuce"].Count < 5)
             {
-                string jsonData = File.ReadAllText(filePath);
-                data = JsonConvert.DeserializeObject<Data>(jsonData);
-                //UI.SetActive(true);
-                //GameObject title = GameObject.Find("TitleCanvas");
-                //Destroy(title);
-            }
-            else
-            {
-                //UI.SetActive(true);
-                //GameObject title = GameObject.Find("TitleCanvas");
-                //Destroy(title);
-                data = new Data();
-                string saveData = JsonUtility.ToJson(data, true);
-                filePath = Application.persistentDataPath + "/userdata.json";
-
-                data.name = inputname;
-                data.money = 5000;
-
-                //data.CropsLevel.Add("lettuce", 1);
-                //data.CropsLevel.Add("spinach", 1);
-                //data.CropsLevel.Add("garlic", 1);
-
-                data.Inventory.Add("lettuce", 0);
-                data.Inventory.Add("spinach", 0);
-                data.Inventory.Add("garlic", 0);
-
-                data.AuctionPrice.Add("lettuce", 100);
-                data.AuctionPrice.Add("spinach", 0);
-                data.AuctionPrice.Add("garlic", 0);
-
-                data.SeedPrice.Add("lettuce", 10);
-
-                data.CropWarehouse.Add("lettuce", 0);
-                data.CropWarehouse.Add("spinach", 0);
-                data.CropWarehouse.Add("garlic", 0);
-
-                data.Microbe.Add("microbe1", 1);
-                data.Microbe.Add("microbe2", 0);
-                data.Microbe.Add("microbe3", 0);
-
-                //data.Microbe.Add("Sample1", 0);
-                //data.Microbe.Add("Sample2", 0);
-                //data.Microbe.Add("Sample3", 0);
-
-                data.storage_count = 50;
-                data.fieldCount = 9;
-
-                data.stockData["lettuce"] = new Queue<int>();
-                while (data.stockData["lettuce"].Count < 5)
+                if (data.stockData["lettuce"].Count == 5)
                 {
-                    if (data.stockData["lettuce"].Count == 5)
-                    {
-                        data.stockData["lettuce"].Enqueue(100);
-                    }
-                    data.stockData["lettuce"].Enqueue(0);
+                    data.stockData["lettuce"].Enqueue(100);
                 }
-                keyValuePairs.Add("Sample1", "microbe1");
-                keyValuePairs.Add("Sample2", "microbe2");
-                keyValuePairs.Add("Sample3", "microbe3");
-
-                GameMoney = data.money;
-                ui.ui.Name = data.name;
-                ui.ui.Money = data.money;
-                ui.Auction_Init(data.AuctionPrice);
-                InitInventory();
-                InitStorage();
-                InstanceField();
-                Microbe_Init();
-
-                cultivate.Add("lettuce", false);
-                cultivate.Add("microbe1", false);
-                cultivate.Add("fertilizer", false);
-                if (data.currentday != dt.Day)
-                {
-                    int difference = dt.Day - data.currentday;
-                    while (difference > 0)
-                    {
-                        AuctionPricing();
-                    }
-                }
-                File.WriteAllText(filePath, saveData);
+                data.stockData["lettuce"].Enqueue(0);
             }
         }
-       
+        cultivate.Add("lettuce", false);
+        cultivate.Add("microbe1", false);
+        cultivate.Add("fertilizer", false);
+        if (data.currentday != dt.Day)
+        {
+            if(data.currentday == 0)
+            {
+                data.currentday = dt.Day;
+                AuctionPricing();
+            }
+
+            else
+            {
+                int difference = dt.Day - data.currentday;
+                while (difference > 0)
+                {
+                    AuctionPricing();
+                    difference--;
+                }
+                ui.Auction_Init(data.AuctionPrice);
+            }
+        }
+
+        keyValuePairs.Add("Sample1", "microbe1");
+        keyValuePairs.Add("Sample2", "microbe2");
+        keyValuePairs.Add("Sample3", "microbe3");
+
+        ui.ui.Name = data.name;
+        ui.ui.Money = data.money;
+        GameMoney = data.money;
+
+        InitInventory();
+        InitStorage();
+        InstanceField();
+        Microbe_Init();
     }
 
     private void SaveData()
     {
-        data.money = GameMoney;
-        data.currentday = dt.Day;
 
         string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
         string saveData = JsonConvert.SerializeObject(data, Formatting.Indented);
@@ -336,12 +321,11 @@ public class GameManager : MonoBehaviour
 
     private void AuctionPricing()
     {
-        //data.AuctionPrice["lettuce"] = (int)GeneratePriceFluctuations();
-        //data.stockData["lettuce"].Enqueue(data.AuctionPrice["lettuce"]);
+
         DequeuePrice("lettuce");
 
-        data.AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
-        data.AuctionPrice["garlic"] = UnityEngine.Random.Range(500, 2500);
+        //data.AuctionPrice["spinach"] = UnityEngine.Random.Range(200, 900);
+        //data.AuctionPrice["garlic"] = UnityEngine.Random.Range(500, 2500);
     }
 
     private void DequeuePrice(string name)
@@ -365,10 +349,10 @@ public class GameManager : MonoBehaviour
         GameMoney += money;
     }
 
-    //private void CropsLevelUp(string name)
-    //{
-    //    data.CropsLevel[name] += 1;
-    //}
+    private void CropsLevelUp(string name)
+    {
+        data.CropsLevel[name] += 1;
+    }
 
     public void AddInventory(string name)
     {
@@ -514,6 +498,7 @@ public class GameManager : MonoBehaviour
     {
         if (GameMoney >= data.AuctionPrice[name])
         {
+            Debug.Log("Fdaf");
             AddInventory(name);
             GameMoney -= num * data.SeedPrice[name];
             ui.ui.Money = GameMoney;
@@ -603,8 +588,10 @@ public class GameManager : MonoBehaviour
         {
             ui.InitProduction_Microbe(data.microbeQueue[i].microbe);
         }
-        ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"], 
-            data.Microbe["Sample1"], data.Microbe["Sample2"], data.Microbe["Sample3"], 0);
+        //ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["microbe2"], data.Microbe["microbe3"], 
+        //    data.Microbe["Sample1"], data.Microbe["Sample2"], data.Microbe["Sample3"], 0);
+
+        ui.Laboratory_Manager(data.Microbe["microbe1"], data.Microbe["Sample1"], 0);
     }
 
     private void CultureInit(TimeSpan ts)

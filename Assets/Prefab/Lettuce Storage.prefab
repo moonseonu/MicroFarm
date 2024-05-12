@@ -146,6 +146,7 @@ GameObject:
   - component: {fileID: 4373212854897640166}
   - component: {fileID: 3438975754801163805}
   - component: {fileID: 7671457015170946820}
+  - component: {fileID: -5338953052095205082}
   m_Layer: 5
   m_Name: Lettuce Storage
   m_TagString: Untagged
@@ -194,14 +195,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.15850139, g: 1, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1241e40282aa1404f8e8e77ac04b7c33, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -231,3 +232,15 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &-5338953052095205082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6118939772252164936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c67d73bb17c6bf4e8e9ed9f6f39ab8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

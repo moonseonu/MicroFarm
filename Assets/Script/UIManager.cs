@@ -152,17 +152,6 @@ public class UIManager : MonoBehaviour
     {
         switch (name)
         {
-            case "name":
-                
-                TMP_InputField input = GameObject.Find("TitleCanvas").transform.Find("Name").GetComponent<TMP_InputField>();
-                Debug.Log(input);
-                if(input != null)
-                {
-                    Debug.Log("fdafsd");
-                    GameManager.instance.inputname = input.name;
-                    GameManager.instance.isinput = true;
-                }
-                break;
             case "bag close":
                 Bag_Content.SetActive(false);
                 break;
@@ -229,14 +218,21 @@ public class UIManager : MonoBehaviour
     public void Laboratory_Manager(int microbe1, int microbe2, int microbe3, int sample1, int sample2, int sample3, int isInit)
     {
         Laboratory lab1 = new Laboratory { name = "microbe1", quantity = microbe1, sample_quantity = sample1 };
-        Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2, sample_quantity = sample2 };
-        Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3, sample_quantity = sample3 };
+        //Laboratory lab2 = new Laboratory { name = "microbe2", quantity = microbe2, sample_quantity = sample2 };
+        //Laboratory lab3 = new Laboratory { name = "microbe3", quantity = microbe3, sample_quantity = sample3 };
         UpdateText(lab1.quantity, lab1.sample_quantity, lab1.quantity_text, lab1.sample_quantity_text, Laboratory_Board, lab1.name, isInit);
         //UpdateText(lab2.quantity, lab2.sample_quantity, lab2.quantity_text, lab2.sample_quantity_text, Laboratory_Board, lab2.name, isInit);
         //UpdateText(lab3.quantity, lab3.sample_quantity, lab3.quantity_text, lab3.sample_quantity_text, Laboratory_Board, lab3.name, isInit);
         laboratory.Add(lab1);
         //laboratory.Add(lab2);
         //laboratory.Add(lab3);
+    }
+
+    public void Laboratory_Manager(int microbe1, int sample1, int isInit)
+    {
+        Laboratory lab1 = new Laboratory { name = "microbe1", quantity = microbe1, sample_quantity = sample1 };
+        UpdateText(lab1.quantity, lab1.sample_quantity, lab1.quantity_text, lab1.sample_quantity_text, Laboratory_Board, lab1.name, isInit);
+        laboratory.Add(lab1);
     }
 
     public void Laboratory_Manager(string microbe_name, int num)
