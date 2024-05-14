@@ -250,7 +250,7 @@ public class GameManager : MonoBehaviour
 
     private void SaveData()
     {
-
+        data.money = GameMoney;
         string filePath = Path.Combine(Application.persistentDataPath, "userdata.json");
         string saveData = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(filePath, saveData);
