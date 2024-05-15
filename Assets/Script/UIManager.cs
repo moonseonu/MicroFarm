@@ -67,6 +67,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject Bag_Open;
     [SerializeField] private GameObject Shop;
     [SerializeField] private GameObject Notice_Board;
+    [SerializeField] private GameObject Option;
 
     [SerializeField] private GameObject Empty_Slot;
     [SerializeField] private GameObject Lettuce_Slot;
@@ -195,6 +196,14 @@ public class UIManager : MonoBehaviour
 
             case "culture a":
                 Production_Microbe(production_microbe[0]);
+                break;
+
+            case "option":
+                Option.SetActive(true);
+                break;
+
+            case "exit":
+                Application.Quit();
                 break;
         }
     }
