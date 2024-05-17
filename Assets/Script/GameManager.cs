@@ -513,10 +513,10 @@ public class GameManager : MonoBehaviour
             ExistData.type = name;
 
             ExistData.start_time = DateTime.Now;
-            ExistData.count = 0;
         }
 
         TimeSpan timeSpan = DateTime.Now - ExistData.start_time;
+        Debug.Log(timeSpan);
         return timeSpan;
     }
 
@@ -527,7 +527,6 @@ public class GameManager : MonoBehaviour
         if(ExistData != null)
         {
             ExistData.type = "";
-            ExistData.count = 0;
             ExistData.start_time = DateTime.MinValue;
         }
     }
@@ -538,23 +537,41 @@ public class GameManager : MonoBehaviour
         {
             case "lettuce":
                 if (!cultivate["lettuce"])
+                {
+                    Debug.Log(cultivate["lettuce"]);
                     cultivate["lettuce"] = true;
+                }
                 else
+                {
+                    Debug.Log(cultivate["lettuce"]);
                     cultivate["lettuce"] = false;
+                }
                 break;
 
             case "microbe1":
                 if (!cultivate["microbe1"])
                 {
+                    Debug.Log(cultivate["microbe1"]);
                     cultivate["microbe1"] = true;
                 }
                 else
+                {
+                    Debug.Log(cultivate["microbe1"]);
                     cultivate["microbe1"] = false;
+                }
                 break;
 
             case "fertilizer":
 
                 break;
+        }
+    }
+
+    public void CultivatonMenu_Close()
+    {
+        foreach(var key in  cultivate.Keys)
+        {
+            cultivate[key] = false;
         }
     }
 
@@ -577,12 +594,12 @@ public class GameManager : MonoBehaviour
                 if (timeSpan.TotalSeconds >= 60)
                 {
                     data.Microbe[keyValuePairs[data.microbeQueue[0].microbe]]++;
-                    data.microbeQueue.RemoveAt(0);
                     timeSpan -= TimeSpan.FromSeconds(60);
-                    CultureInit(timeSpan);
+                    data.microbeQueue.RemoveAt(0);
+                    if(data.microbeQueue.Count > 0)
+                        CultureInit(timeSpan);
                 }
             }
-
         }
         for(int i = 0; i < data.microbeQueue.Count; i++)
         {
@@ -602,14 +619,22 @@ public class GameManager : MonoBehaviour
             {
                 data.Microbe[keyValuePairs[data.microbeQueue[0].microbe]]++;
                 data.microbeQueue.RemoveAt(0);
-                ts -= TimeSpan.FromSeconds(60);
-                CultureInit(ts);
+                if(data.microbeQueue.Count > 0)
+                {
+                    ts -= TimeSpan.FromSeconds(60);
+                    CultureInit(ts);
+                }
             }
 
             else if (ts.TotalSeconds < 60 && ts.TotalSeconds > 0)
             {
                 data.microbeQueue[0].start_time = DateTime.Now.Subtract(ts);
             }
+        }
+
+        else
+        {
+
         }
     }
 

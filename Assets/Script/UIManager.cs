@@ -136,16 +136,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void Open_Cultivation_Menu()
+    public bool Open_Cultivation_Menu()
     {
         if (!Cultivation_Menu_Object.activeSelf)
         {
             Cultivation_Menu_Object.SetActive(true);
+            return true;
         }
 
         else
         {
             Cultivation_Menu_Object.SetActive(false);
+            return false;
         }
     }
 
@@ -200,6 +202,14 @@ public class UIManager : MonoBehaviour
 
             case "option":
                 Option.SetActive(true);
+                break;
+
+            case "close option":
+                Option.SetActive(false);
+                break;
+
+            case "close cultivation menu":
+                Open_Cultivation_Menu();
                 break;
 
             case "exit":

@@ -19,7 +19,7 @@ public class FieldManager : MonoBehaviour
     //[SerializeField] private Sprite GrowingLettuce1;
     //[SerializeField] private Sprite GrowingLettuce2;
     //[SerializeField] private Sprite GrowingLettuce3;
-
+    [SerializeField] private GameObject GrowingLettuce0;
     [SerializeField] private GameObject GrowingLettuce1;
     [SerializeField] private GameObject GrowingLettuce2;
     [SerializeField] private GameObject GrowingLettuce3;
@@ -99,17 +99,16 @@ public class FieldManager : MonoBehaviour
                         if (!isMenu)
                         {
                             UIManager ui = GameManager.instance.GetComponent<UIManager>();
-                            ui.Open_Cultivation_Menu();
-                            isMenu = true;
+                            
+                            isMenu = ui.Open_Cultivation_Menu(); ;
                         }
 
                         else
                         {
                             UIManager ui = GameManager.instance.GetComponent<UIManager>();
-                            ui.Open_Cultivation_Menu();
-                            isMenu = false;
+                            isMenu = ui.Open_Cultivation_Menu();
 
-                            foreach(var item in GameManager.instance.cultivate)
+                            foreach (var item in GameManager.instance.cultivate)
                             {
                                 if(item.Value == true)
                                 {
@@ -136,6 +135,7 @@ public class FieldManager : MonoBehaviour
                                             Used_Microbe[item.Key] = true;
                                         }
                                     }
+                                    //GameManager.instance.CultivatonMenu_Close();
                                 }
                             }
                         }
@@ -155,7 +155,7 @@ public class FieldManager : MonoBehaviour
                 {
                     if (hit.collider.gameObject == gameObject)
                     {
-
+                        GrowingLettuce0.SetActive(false);
                         GrowingLettuce1.SetActive(false);
                         GrowingLettuce2.SetActive(false);
                         GrowingLettuce3.SetActive(false);
@@ -175,6 +175,7 @@ public class FieldManager : MonoBehaviour
     {
         if (Growth_Type.ContainsKey("lettuce") && Growth_Type["lettuce"])
         {
+            GrowingLettuce0.SetActive(true);
             if (!Used_Microbe["microbe1"] && Used_Microbe.ContainsKey("microbe1"))
             {
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3))
@@ -194,6 +195,7 @@ public class FieldManager : MonoBehaviour
 
             else
             {
+                Debug.Log("2");
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3 * 1 / 2))
                 {
                     GrowingLettuce1.SetActive(true);

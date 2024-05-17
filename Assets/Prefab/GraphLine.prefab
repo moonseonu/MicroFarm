@@ -80,11 +80,11 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: -200, y: 150, z: 0}
-  - {x: -100, y: 138, z: 0}
-  - {x: 0, y: 133.5, z: 0}
-  - {x: 100, y: 129, z: 0}
-  - {x: 200, y: 124.5, z: 0}
+  - {x: -200, y: 148.27586, z: 0}
+  - {x: -100, y: 143.10345, z: 0}
+  - {x: 0, y: 150, z: 0}
+  - {x: 100, y: 139.65517, z: 0}
+  - {x: 200, y: 141.3793, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.1
