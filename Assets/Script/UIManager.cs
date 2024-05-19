@@ -301,23 +301,22 @@ public class UIManager : MonoBehaviour
     private void MakeSlot(string name, int num)
     {
         GameObject temp = null;
-        if (num != 1)
+        if (num > 10)
         {
             for (int i = 0; i < GameManager.instance.Storage_Count; i++)
             {
                 if (Storage_Inven.transform.GetChild(i).childCount == 0)
                 {
-
                     temp = Instantiate(StorageSlot[name]);
                     temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
                     break;
                 }
             }
-            Slot Newslot = new Slot { item = StorageSlot[name], quantity = 2 };
+            Slot Newslot = new Slot { item = StorageSlot[name], quantity = 10 };
             slots.Add(Newslot);
             Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
             Newslot.quantity_text.text = Newslot.quantity.ToString();
-            num -= 2;
+            num -= 10;
         }
 
         else
@@ -332,18 +331,22 @@ public class UIManager : MonoBehaviour
                     break;
                 }
             }
-            Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
+            Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
             slots.Add(Newslot);
             Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
             Newslot.quantity_text.text = Newslot.quantity.ToString();
-            num = 0;
+            return;
         }
-        if (num > 2)
-            MakeSlot(name, num);
-        else if (num == 1)
-            MakeSlot(name, 1);
+        MakeSlot(name, num);
     }
 
+    /// <summary>
+    /// num은 항상 1일 때를 기준으로 만들어둠
+    /// 이후 다량 생산으로 인해 num이 1보다 클 때를 기준으로 만들것도 생각해야함
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="num"></param>
+    /// <param name="isInit"></param>
     public void AddStorage(string name, int num, bool isInit)
     {
         GameObject temp = null;
@@ -352,7 +355,7 @@ public class UIManager : MonoBehaviour
             case "lettuce":
                 if (!isInit)
                 {
-                    Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity < 2);
+                    Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity < 10);
                     if (Existslot != null)
                     {
                         Existslot.quantity += num;
@@ -365,7 +368,6 @@ public class UIManager : MonoBehaviour
                         {
                             if (Storage_Inven.transform.GetChild(i).childCount == 0)
                             {
-
                                 temp = Instantiate(StorageSlot[name]);
                                 temp.transform.parent = Storage_Inven.transform.GetChild(i).transform;
                                 break;
@@ -381,7 +383,7 @@ public class UIManager : MonoBehaviour
 
                 else
                 {
-                    if (num <= 2)
+                    if (num <= 10)
                     {
                         if (num != 0)
                         {
