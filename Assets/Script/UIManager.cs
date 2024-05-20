@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
 using System;
+using Unity.Burst.CompilerServices;
 
 public class UIManager : MonoBehaviour
 {
@@ -84,6 +85,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private RawImage Graph_Back;
     [SerializeField] private GameObject GraphDot;
 
+
+    public bool isMenuOpen = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -117,9 +121,6 @@ public class UIManager : MonoBehaviour
         StorageSlot.Add("lettuce", Lettuce_Slot);
         StorageSlot.Add("rotten", Rotten_Slot);
 
-
-        //미생물 배양 초기화
-
     }
 
     public void Auction_Init(Dictionary<string, int> crops)
@@ -127,6 +128,7 @@ public class UIManager : MonoBehaviour
         GameObject temp;
         foreach (var price in crops)
         {
+            Debug.Log(price.Key);
             temp = Notice_Board.transform.Find(price.Key).transform.GetChild(0).GetChild(0).gameObject;
             TMP_Text p = temp.GetComponent<TMP_Text>();
             if (p != null)
@@ -141,12 +143,14 @@ public class UIManager : MonoBehaviour
         if (!Cultivation_Menu_Object.activeSelf)
         {
             Cultivation_Menu_Object.SetActive(true);
+            isMenuOpen = true;
             return true;
         }
 
         else
         {
             Cultivation_Menu_Object.SetActive(false);
+            isMenuOpen = false;
             return false;
         }
     }
@@ -157,22 +161,27 @@ public class UIManager : MonoBehaviour
         {
             case "bag close":
                 Bag_Content.SetActive(false);
+                isMenuOpen = false;
                 break;
 
             case "bag":
                 Bag_Content.SetActive(true);
+                isMenuOpen = true;
                 break;
 
             case "shop":
                 Shop.SetActive(true);
+                isMenuOpen = true;
                 break;
 
             case "close storage":
                 Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(false);
+                isMenuOpen = false;
                 break;
 
             case "close shop":
                 Shop.SetActive(false);
+                isMenuOpen = false;
                 break;
 
             case "buy lettuce":
@@ -180,12 +189,17 @@ public class UIManager : MonoBehaviour
                 break;
 
             case "notice board open":
-                Notice_Board.SetActive(true);
-                DrawGraph();
+                if (!isMenuOpen)
+                {
+                    Notice_Board.SetActive(true);
+                    DrawGraph("lettuce");
+                    isMenuOpen = true;
+                }
                 break;
 
             case "notice board close":
                 Notice_Board.SetActive(false);
+                isMenuOpen = false;
                 break;
 
             case "sell lettuce":
@@ -194,6 +208,7 @@ public class UIManager : MonoBehaviour
 
             case "close lab":
                 Laboratory_Board.SetActive(false);
+                isMenuOpen = false;
                 break;
 
             case "culture a":
@@ -201,15 +216,28 @@ public class UIManager : MonoBehaviour
                 break;
 
             case "option":
-                Option.SetActive(true);
+                if (!isMenuOpen)
+                {
+                    Option.SetActive(true);
+                    isMenuOpen = true;
+                }
                 break;
 
             case "close option":
                 Option.SetActive(false);
+                isMenuOpen = false;
                 break;
 
             case "close cultivation menu":
-                Open_Cultivation_Menu();
+                Cultivation_Menu_Object.SetActive(false);
+                isMenuOpen = false;
+
+                for (int i = 0; i < 9; i++)
+                {
+                    GameObject field = GameObject.Find("Construction").transform.Find("ParentField").GetChild(i).gameObject;
+                    FieldManager fm = field.GetComponent<FieldManager>();
+                    fm.isMenu = false;
+                }
                 break;
 
             case "exit":
@@ -226,11 +254,16 @@ public class UIManager : MonoBehaviour
 
     public void StorageInstance()
     {
-        Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
+        if (!isMenuOpen)
+        {
+            Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
+            isMenuOpen = true;
+        }
     }
 
     public void Laboratory_Open()
     {
+        isMenuOpen = true;
         Laboratory_Board.SetActive(true);
     }
 
@@ -432,7 +465,7 @@ public class UIManager : MonoBehaviour
                 inventorys.Add(Newinven);
                 if (!inventory_List.Contains(item))
                     inventory_List.Add(item);
-                for (int i = 0; i < 6; i++)
+                for (int i = 1; i < 6; i++)
                 {
                     if (Bag_Content.transform.GetChild(i).childCount == 0)
                     {
@@ -443,12 +476,6 @@ public class UIManager : MonoBehaviour
                 }
                 Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                 Newinven.quantity_text.text = Newinven.quantity.ToString();
-
-                Newinven.toggle = temp.GetComponent<Toggle>();
-                if (Newinven.toggle != null)
-                {
-                    Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
-                }
             }
             else
             {
@@ -458,7 +485,7 @@ public class UIManager : MonoBehaviour
                     inventorys.Add(Newinven);
                     if (!inventory_List.Contains(item))
                         inventory_List.Add(item);
-                    for (int i = 0; i < 6; i++)
+                    for (int i = 1; i < 6; i++)
                     {
                         if (Bag_Content.transform.GetChild(i).childCount == 0)
                         {
@@ -470,12 +497,6 @@ public class UIManager : MonoBehaviour
                     }
                     Newinven.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                     Newinven.quantity_text.text = Newinven.quantity.ToString();
-
-                    Newinven.toggle = temp.GetComponent<Toggle>();
-                    if (Newinven.toggle != null)
-                    {
-                        Newinven.toggle.onValueChanged.AddListener((value) => IsUsedItem(value, Newinven.item));
-                    }
                 }
 
             }
@@ -546,7 +567,7 @@ public class UIManager : MonoBehaviour
     public void UpdateStorage(string name, int num)
     {
         GameObject temp = null;
-        Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity != 2);
+        Slot Existslot = slots.Find(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity != 10);
         if (Existslot != null)
         {
             temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
@@ -565,7 +586,7 @@ public class UIManager : MonoBehaviour
 
         else
         {
-            Existslot = slots.FindLast(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity == 2);
+            Existslot = slots.FindLast(Existslot => Existslot.item == StorageSlot[name] && Existslot.quantity == 10);
             if (Existslot != null)
             {
                 temp = Existslot.quantity_text.gameObject.transform.parent.gameObject;
@@ -616,27 +637,38 @@ public class UIManager : MonoBehaviour
         Laboratory_Manager(type, num);
     }
 
-    private void DrawGraph()
+    private void DrawGraph(string name)
     {
-        int[] data = GameManager.instance.GetStockPrice("lettuce").ToArray();
+        int[] data = GameManager.instance.GetStockPrice(name).ToArray();
         Vector3[] positions = new Vector3[5];
 
         float start_Pos = -Graph_Back.rectTransform.rect.width / 2;
-        float max_Posy = Graph_Back.rectTransform.rect.height / 2;
+        float max_Posy = Graph_Back.rectTransform.rect.height;
 
         float xInterval = (float)Graph_Back.rectTransform.rect.width / (5 - 1);
         float maxDataValue = Mathf.Max(data);
+        float minDataValue = Mathf.Min(data);
+
+        GameObject Maxprice = Notice_Board.transform.Find(name).transform.Find("Sell Button").transform.Find("MaxPrice").gameObject;
+        GameObject Currentprice = Notice_Board.transform.Find(name).transform.Find("Sell Button").transform.Find("CurrentPrice").gameObject;
+
+        TMP_Text Max = Maxprice.GetComponent<TMP_Text>();
+        TMP_Text Cur = Currentprice.GetComponent<TMP_Text>();
+
+        Max.text = maxDataValue.ToString();
+        Cur.text = data[4].ToString();
 
         for (int i = 0; i < 5; i++)
         {
+            float PowValue = Mathf.Pow(((float)data[i] / maxDataValue) , 5);
             float xPos = start_Pos + i * xInterval;
-            float yPos = (float)data[i] / maxDataValue * max_Posy;
+            float yPos = PowValue * max_Posy;
 
             positions[i] = new Vector3(xPos, yPos, 0f);
 
             GameObject point = Instantiate(GraphDot, Graph_Back.rectTransform);
             RectTransform pointTransform = point.GetComponent<RectTransform>();
-            pointTransform.anchoredPosition = new Vector2(xPos, 0);
+            pointTransform.anchoredPosition = new Vector2(xPos, -150f);
             pointTransform.sizeDelta = new Vector2(xInterval * 0.4f, yPos);
         }
 
@@ -645,38 +677,5 @@ public class UIManager : MonoBehaviour
         lineRenderer.SetPositions(positions);
         lineRenderer.startWidth = 20f;
         lineRenderer.endWidth = 20f;
-
-        //Texture2D texture = LineToTexture(positions);
-        //Graph_Back.texture = texture;
-    }
-
-    private Texture2D LineToTexture(Vector3[] positions)
-    {
-        float width = Graph_Back.rectTransform.rect.width;
-        float height = Graph_Back.rectTransform.rect.height;
-        Texture2D texture = new Texture2D((int)width, (int)height);
-
-        for(int i = 0; i < positions.Length - 1; i++)
-        {
-            Vector3 start = positions[i];
-            Vector3 end = positions[i + 1];
-
-            Vector3 len_dir = end - start;
-            float inclination = len_dir.y / len_dir.x;
-
-            for(int x = (int)start.x; x < (int)end.x; x++)
-            {
-                int y = (int)(start.y + inclination * (x - start.x));
-                for(int j = 0; j < y; j++)
-                {
-                    if(x >= 0 && x < texture.width && y >= 0 && y < texture.height)
-                    {
-                        texture.SetPixel(x, j, Color.red);
-                    }
-                }
-            }
-        }
-        texture.Apply();
-        return texture;
     }
 }

@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class FieldManager : MonoBehaviour
 {
-
-    private SpriteRenderer Sr;
     [SerializeField] private float time;
     private Dictionary<string, bool> Growth_Type = new Dictionary<string, bool>();
     private Dictionary<string, bool> Used_Microbe = new Dictionary<string, bool>();
@@ -16,16 +14,13 @@ public class FieldManager : MonoBehaviour
 
     [SerializeField] private GameObject Lettuce;
 
-    //[SerializeField] private Sprite GrowingLettuce1;
-    //[SerializeField] private Sprite GrowingLettuce2;
-    //[SerializeField] private Sprite GrowingLettuce3;
     [SerializeField] private GameObject GrowingLettuce0;
     [SerializeField] private GameObject GrowingLettuce1;
     [SerializeField] private GameObject GrowingLettuce2;
     [SerializeField] private GameObject GrowingLettuce3;
 
     private bool isHarvest;
-    private bool isMenu;
+    public bool isMenu;
     // Start is called before the first frame update
     void Start()
     {
@@ -74,17 +69,21 @@ public class FieldManager : MonoBehaviour
 
         if (time >= TimeSpan.FromSeconds(Grow_Time[type] * 2 / 3))
         {
+            GrowingLettuce1.SetActive(false);
             GrowingLettuce2.SetActive(true);
         }
 
         if (time >= TimeSpan.FromSeconds(Grow_Time[type]))
         {
+            GrowingLettuce2.SetActive(false);
             GrowingLettuce3.SetActive(true);
             isHarvest = true;
         }
     }
+
     private void Cultivation()
     {
+        UIManager ui = GameManager.instance.GetComponent<UIManager>();
         if (!isHarvest)
         {
             if (Input.GetMouseButtonUp(0))
@@ -98,14 +97,14 @@ public class FieldManager : MonoBehaviour
                     {
                         if (!isMenu)
                         {
-                            UIManager ui = GameManager.instance.GetComponent<UIManager>();
-                            
-                            isMenu = ui.Open_Cultivation_Menu(); ;
+                            if (!ui.isMenuOpen)
+                            {
+                                isMenu = ui.Open_Cultivation_Menu();
+                            }
                         }
 
                         else
                         {
-                            UIManager ui = GameManager.instance.GetComponent<UIManager>();
                             isMenu = ui.Open_Cultivation_Menu();
 
                             foreach (var item in GameManager.instance.cultivate)
@@ -135,7 +134,6 @@ public class FieldManager : MonoBehaviour
                                             Used_Microbe[item.Key] = true;
                                         }
                                     }
-                                    //GameManager.instance.CultivatonMenu_Close();
                                 }
                             }
                         }
@@ -184,10 +182,12 @@ public class FieldManager : MonoBehaviour
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3))
                 {
+                    GrowingLettuce1.SetActive(false);
                     GrowingLettuce2.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"]))
                 {
+                    GrowingLettuce2.SetActive(false);
                     GrowingLettuce3.SetActive(true);
                     isHarvest = true;
                 }

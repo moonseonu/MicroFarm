@@ -230,7 +230,7 @@ public class GameManager : MonoBehaviour
                     AuctionPricing();
                     difference--;
                 }
-                ui.Auction_Init(data.AuctionPrice);
+                //ui.Auction_Init(data.AuctionPrice);
             }
         }
 
@@ -335,7 +335,6 @@ public class GameManager : MonoBehaviour
         if (data.stockData[name].Count > 4)
         {
             data.stockData[name].Dequeue();
-            Debug.Log(data.stockData[name].Count);
         }
     }
 
@@ -403,28 +402,43 @@ public class GameManager : MonoBehaviour
 
     private void OnClickConstruction()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (!ui.isMenuOpen)
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
+            if (Input.GetMouseButtonUp(0))
             {
-                Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
-
-                if (hit.collider != null)
+                if (!EventSystem.current.IsPointerOverGameObject())
                 {
-                    if (hit.collider.gameObject == Laboratory)
-                    {
-                        ui.Laboratory_Open();
-                    }
+                    Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
 
-                    else if (hit.collider.gameObject == Fertilizer_Facility)
+                    if (hit.collider != null)
                     {
+                        if (hit.collider.gameObject == Laboratory)
+                        {
+                            ui.Laboratory_Open();
+                        }
 
-                    }
+                        else if (hit.collider.gameObject == Fertilizer_Facility)
+                        {
 
-                    else if (hit.collider.gameObject == Storage)
-                    {
-                        ui.StorageInstance();
+                        }
+
+                        else if (hit.collider.gameObject == Storage)
+                        {
+                            ui.StorageInstance();
+                        }
+
+                        else
+                        {
+                            for(int i = 0; i < 9; i++)
+                            {
+                                GameObject field = GameObject.Find("Construction").transform.Find("ParentField").GetChild(i).gameObject;
+                                if(hit.collider.gameObject == field)
+                                {
+
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -516,7 +530,6 @@ public class GameManager : MonoBehaviour
         }
 
         TimeSpan timeSpan = DateTime.Now - ExistData.start_time;
-        Debug.Log(timeSpan);
         return timeSpan;
     }
 
@@ -682,20 +695,13 @@ public class GameManager : MonoBehaviour
         DateTime currentDate = DateTime.Now.Date;
         float currentPrice = (float)data.AuctionPrice["lettuce"];
 
-        // Calculate price fluctuations for each day
+        float randomValue = Mathf.Sqrt(-2.0f * Mathf.Log(UnityEngine.Random.value)) *
+                            Mathf.Cos(2.0f * Mathf.PI * UnityEngine.Random.value);
 
-            // Generate random value from Gaussian distribution
-            float randomValue = Mathf.Sqrt(-2.0f * Mathf.Log(UnityEngine.Random.value)) *
-                                Mathf.Cos(2.0f * Mathf.PI * UnityEngine.Random.value);
+        float priceChange = data.meanChange + randomValue * data.stdDeviation;
 
-            // Calculate price change based on Gaussian distribution
-            float priceChange = data.meanChange + randomValue * data.stdDeviation;
-
-            // Update price for the next day
-            currentPrice += priceChange;
-
-            // Move to the next day
-            currentDate = currentDate.AddDays(1);
+        currentPrice += priceChange;
+        currentDate = currentDate.AddDays(1);
 
         return currentPrice;
     }
