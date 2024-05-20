@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using System;
 using Unity.Burst.CompilerServices;
+using static System.Net.Mime.MediaTypeNames;
 
 public class UIManager : MonoBehaviour
 {
@@ -228,20 +229,29 @@ public class UIManager : MonoBehaviour
                 isMenuOpen = false;
                 break;
 
+            case "cultivate lettuce":
+                GameManager.instance.Planting("lettuce");
+                break;
+
+            case "cultivate microbe1":
+                GameManager.instance.Planting("microbe1");
+                break;
+
             case "close cultivation menu":
                 Cultivation_Menu_Object.SetActive(false);
                 isMenuOpen = false;
+
+                GameManager.instance.Planting("close");
 
                 for (int i = 0; i < 9; i++)
                 {
                     GameObject field = GameObject.Find("Construction").transform.Find("ParentField").GetChild(i).gameObject;
                     FieldManager fm = field.GetComponent<FieldManager>();
-                    fm.isMenu = false;
                 }
                 break;
 
             case "exit":
-                Application.Quit();
+                UnityEngine.Application.Quit();
                 break;
         }
     }
@@ -259,6 +269,11 @@ public class UIManager : MonoBehaviour
             Storage_Inven.transform.parent.parent.parent.gameObject.SetActive(true);
             isMenuOpen = true;
         }
+    }
+
+    public void CultivationMenu_Open()
+    {
+        Cultivation_Menu_Object.SetActive(true);
     }
 
     public void Laboratory_Open()
@@ -303,7 +318,15 @@ public class UIManager : MonoBehaviour
         Laboratory Exist = laboratory.Find(Exist => Exist.name == name);
         if (Exist != null)
         {
-            UpdateText(Exist.quantity, Exist.sample_quantity, Exist.quantity_text, Exist.sample_quantity_text, Laboratory_Board, name, num);
+            if(num > 0)
+                UpdateText(Exist.quantity, Exist.sample_quantity, Exist.quantity_text, Exist.sample_quantity_text, Laboratory_Board, name, num);
+
+            else
+            {
+                Exist.quantity += num;
+                Exist.quantity_text = Laboratory_Board.transform.Find(name).transform.Find("Count").GetComponent<TMP_Text>();
+                Exist.quantity_text.text = Exist.quantity.ToString();
+            }
         }
     }
 
@@ -314,21 +337,6 @@ public class UIManager : MonoBehaviour
         text.text = quantity.ToString();
         sample_text = go.transform.Find(name).transform.Find("Sample Count").transform.Find("Count").GetComponent<TMP_Text>();
         sample_text.text = sample_quantity.ToString();
-    }
-
-    public void IsUsedItem(bool isUsed, GameObject item)
-    {
-        if (isUsed)
-        {
-            GameManager.instance.UseItem = true;
-            GameManager.instance.IsUsedItem(item.name);
-        }
-
-        else
-        {
-            GameManager.instance.UseItem = false;
-            GameManager.instance.IsUsedItem("");
-        }
     }
 
     private void MakeSlot(string name, int num)

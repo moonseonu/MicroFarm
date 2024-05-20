@@ -19,8 +19,8 @@ public class FieldManager : MonoBehaviour
     [SerializeField] private GameObject GrowingLettuce2;
     [SerializeField] private GameObject GrowingLettuce3;
 
-    private bool isHarvest;
-    public bool isMenu;
+    public bool isHarvest;
+    public bool isGrowing;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,16 +30,14 @@ public class FieldManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Cultivation();
         Growth();
-        //Harvest();
     }
 
     public void Init(int num)
     {
         FieldNum = num;
         isHarvest = false;
-        isMenu = false;
+        isGrowing = false;
         Growth_Type.Add("lettuce", false);
         Growth_Type.Add("spinach", false);
         Growth_Type.Add("garlic", false);
@@ -53,14 +51,16 @@ public class FieldManager : MonoBehaviour
     {
         FieldNum = num;
         isHarvest = false;
+        isGrowing = true;
         Growth_Type.Add("lettuce", false);
         Growth_Type.Add("spinach", false);
         Growth_Type.Add("garlic", false);
         Used_Microbe.Add("microbe1", false);
 
         Growth_Type[type] = true;
+        Used_Microbe[microbe] = true;
 
-        Grow_Time.Add("lettuce", 10.0f);
+        Grow_Time.Add(type, 40.0f);
         if (time >= TimeSpan.FromSeconds(Grow_Time[type] * 1 / 3))
         {
             Lettuce.SetActive(true);
@@ -78,99 +78,50 @@ public class FieldManager : MonoBehaviour
             GrowingLettuce2.SetActive(false);
             GrowingLettuce3.SetActive(true);
             isHarvest = true;
+            isGrowing = false;
         }
     }
 
-    private void Cultivation()
+    public void cultivation(string name)
     {
-        UIManager ui = GameManager.instance.GetComponent<UIManager>();
-        if (!isHarvest)
+        switch (name)
         {
-            if (Input.GetMouseButtonUp(0))
-            {
-                Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
+            case "lettuce":
+                Lettuce.SetActive(true);
+                GameManager.instance.UseInventory("lettuce");
+                Growth_Type[name] = true;
+                isGrowing = true;
+                break;
 
-                if (hit.collider != null)
-                {
-                    if (hit.collider.gameObject == gameObject)
-                    {
-                        if (!isMenu)
-                        {
-                            if (!ui.isMenuOpen)
-                            {
-                                isMenu = ui.Open_Cultivation_Menu();
-                            }
-                        }
-
-                        else
-                        {
-                            isMenu = ui.Open_Cultivation_Menu();
-
-                            foreach (var item in GameManager.instance.cultivate)
-                            {
-                                if(item.Value == true)
-                                {
-                                    if(item.Key == "lettuce")
-                                    {
-                                        if (GameManager.instance.Inventory_Count("lettuce") != 0)
-                                        {
-                                            Lettuce.SetActive(true);
-                                            if (!isHarvest)
-                                            {
-                                                if (!Growth_Type["lettuce"])
-                                                {
-                                                    GameManager.instance.UseInventory("lettuce");
-                                                }
-                                            }
-                                            Growth_Type[item.Key] = true;
-                                        }
-                                    }
-
-                                    else if(item.Key == "microbe1")
-                                    {
-                                        if(GameManager.instance.Microbe_Count(item.Key) != 0)
-                                        {
-                                            Used_Microbe[item.Key] = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        else
-        {
-            if (Input.GetMouseButtonUp(0))
-            {
-                Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
-
-                if (hit.collider != null)
-                {
-                    if (hit.collider.gameObject == gameObject)
-                    {
-                        GrowingLettuce0.SetActive(false);
-                        GrowingLettuce1.SetActive(false);
-                        GrowingLettuce2.SetActive(false);
-                        GrowingLettuce3.SetActive(false);
-                        Lettuce.SetActive(false);
-                        GameManager.instance.HarvestCrops("lettuce");
-                        isHarvest = false;
-                        Growth_Type["lettuce"] = false;
-                        time = 0.0f;
-                        GameManager.instance.FieldDataInit(FieldNum);
-                    }
-                }
-            }
+            case "microbe1":
+                GameManager.instance.UseMicrobe(name, FieldNum);
+                Used_Microbe[name] = true;
+                break;
         }
     }
 
+    public void harvesting(string name)
+    {
+        switch (name)
+        {
+            case "lettuce":
+                GrowingLettuce0.SetActive(false);
+                GrowingLettuce1.SetActive(false);
+                GrowingLettuce2.SetActive(false);
+                GrowingLettuce3.SetActive(false);
+                Lettuce.SetActive(false);
+                GameManager.instance.HarvestCrops("lettuce");
+                isHarvest = false;
+                Growth_Type["lettuce"] = false;
+                Used_Microbe["microbe1"] = false;
+                time = 0.0f;
+                GameManager.instance.FieldDataInit(FieldNum);
+                break;
+        }
+    }
     private void Growth()
     {
+
         if (Growth_Type.ContainsKey("lettuce") && Growth_Type["lettuce"])
         {
             GrowingLettuce0.SetActive(true);
@@ -195,16 +146,16 @@ public class FieldManager : MonoBehaviour
 
             else
             {
-                Debug.Log("2");
-                if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3 * 1 / 2))
+                Grow_Time["lettuce"] -= 10;
+                if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3))
                 {
                     GrowingLettuce1.SetActive(true);
                 }
-                if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3 * 1 / 2))
+                if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3))
                 {
                     GrowingLettuce2.SetActive(true);
                 }
-                if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 2))
+                if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"]))
                 {
                     GrowingLettuce3.SetActive(true);
                     isHarvest = true;

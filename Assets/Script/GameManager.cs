@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Linq;
+using Unity.VisualScripting;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -86,7 +88,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject Storage;
 
     [SerializeField] private int gameMoney;
-    [SerializeField] private bool useItem;
+    [SerializeField] private string useItem = "";
 
     /// <summary>
     /// ÁÂÇ¥ ¸¸µé±â¿ë µñ¼Å³Ê¸®
@@ -103,11 +105,6 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, bool>cultivate = new Dictionary<string, bool>();
 
     public string usedName = "";
-    public bool UseItem
-    {
-        get { return useItem; }
-        set { useItem = value; }
-    }
     public int GameMoney
     {
         get { return gameMoney; }
@@ -144,6 +141,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         OnClickConstruction();
+        UpdatePlanting();
         SaveData();
     }
 
@@ -435,13 +433,93 @@ public class GameManager : MonoBehaviour
                                 GameObject field = GameObject.Find("Construction").transform.Find("ParentField").GetChild(i).gameObject;
                                 if(hit.collider.gameObject == field)
                                 {
-
+                                    fm = field.GetComponent<FieldManager>();
+                                    if (!fm.isGrowing)
+                                    {
+                                        if (fm.isHarvest)
+                                        {
+                                            FieldData ExistData = data.fieldDatas.Find(ExistData => ExistData.field_num == i);
+                                            if (ExistData != null)
+                                            {
+                                                fm.harvesting(ExistData.type);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            ui.CultivationMenu_Open();
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private void UpdatePlanting()
+    {
+        if (useItem != "")
+        {
+            if (Input.GetMouseButtonUp(0))
+            {
+                if (!EventSystem.current.IsPointerOverGameObject())
+                {
+                    Vector2 clickPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(clickPosition, Vector2.zero);
+
+                    if (hit.collider != null)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            GameObject field = GameObject.Find("Construction").transform.Find("ParentField").GetChild(i).gameObject;
+                            if (hit.collider.gameObject == field)
+                            {
+                                fm = field.GetComponent<FieldManager>();
+                                if (!fm.isGrowing)
+                                {
+                                    if (!fm.isHarvest)
+                                    {
+                                        if (data.Inventory[useItem] > 0)
+                                            fm.cultivation(useItem);
+                                    }
+                                    else
+                                    {
+                                        FieldData ExistData = data.fieldDatas.Find(ExistData => ExistData.field_num == i);
+                                        if (ExistData != null)
+                                        {
+                                            fm.harvesting(ExistData.type);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void Planting(string crop)
+    {
+        switch (crop)
+        {
+            case "lettuce":
+                if (data.Inventory[crop] > 0)
+                {
+                    useItem = crop;
+                }
+                break;
+
+            case "microbe1":
+                if (data.Microbe[crop] > 0)
+                    useItem = crop;
+                break;
+
+            case "close":
+                useItem = "";
+                break;
         }
     }
 
@@ -493,7 +571,7 @@ public class GameManager : MonoBehaviour
         if(random == 0)
         {
             data.Microbe["Sample1"] += 1;
-            ui.Update_Lab("Sample1", 1);
+            ui.Update_Lab("microbe1", 1);
         }
     }
 
@@ -544,41 +622,41 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void CultivationManager(string name)
-    {
-        switch (name)
-        {
-            case "lettuce":
-                if (!cultivate["lettuce"])
-                {
-                    Debug.Log(cultivate["lettuce"]);
-                    cultivate["lettuce"] = true;
-                }
-                else
-                {
-                    Debug.Log(cultivate["lettuce"]);
-                    cultivate["lettuce"] = false;
-                }
-                break;
+    //public void CultivationManager(string name)
+    //{
+    //    switch (name)
+    //    {
+    //        case "lettuce":
+    //            if (!cultivate["lettuce"])
+    //            {
+    //                Debug.Log(cultivate["lettuce"]);
+    //                cultivate["lettuce"] = true;
+    //            }
+    //            else
+    //            {
+    //                Debug.Log(cultivate["lettuce"]);
+    //                cultivate["lettuce"] = false;
+    //            }
+    //            break;
 
-            case "microbe1":
-                if (!cultivate["microbe1"])
-                {
-                    Debug.Log(cultivate["microbe1"]);
-                    cultivate["microbe1"] = true;
-                }
-                else
-                {
-                    Debug.Log(cultivate["microbe1"]);
-                    cultivate["microbe1"] = false;
-                }
-                break;
+    //        case "microbe1":
+    //            if (!cultivate["microbe1"])
+    //            {
+    //                Debug.Log(cultivate["microbe1"]);
+    //                cultivate["microbe1"] = true;
+    //            }
+    //            else
+    //            {
+    //                Debug.Log(cultivate["microbe1"]);
+    //                cultivate["microbe1"] = false;
+    //            }
+    //            break;
 
-            case "fertilizer":
+    //        case "fertilizer":
 
-                break;
-        }
-    }
+    //            break;
+    //    }
+    //}
 
     public void CultivatonMenu_Close()
     {
@@ -663,6 +741,20 @@ public class GameManager : MonoBehaviour
         }
 
         else return false;
+    }
+
+    public void UseMicrobe(string microbe, int num)
+    {
+        if (data.Microbe[microbe] > 0)
+        {
+            data.Microbe[microbe]--;
+            FieldData ExistData = data.fieldDatas.Find(ExistData => ExistData.field_num == num);
+            if (ExistData != null)
+            {
+                ExistData.microbe = microbe;
+                ui.Update_Lab(microbe, -1);
+            }
+        }
     }
 
     public void UpdateCulture(string type)
