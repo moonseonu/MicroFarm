@@ -466,8 +466,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Touch Title
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 70eadcc90824a854692f14dfa3711847, type: 2}
-  m_sharedMaterial: {fileID: -4171755635348109412, guid: 70eadcc90824a854692f14dfa3711847, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 13b7a270b96c5da4b8b04f66a550e8cf, type: 2}
+  m_sharedMaterial: {fileID: -4478183187093346785, guid: 13b7a270b96c5da4b8b04f66a550e8cf, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
