@@ -21,6 +21,7 @@ public class FieldManager : MonoBehaviour
 
     public bool isHarvest;
     public bool isGrowing;
+    private int yield = 1;
     // Start is called before the first frame update
     void Start()
     {
@@ -44,7 +45,7 @@ public class FieldManager : MonoBehaviour
 
         Used_Microbe.Add("microbe1", false);
 
-        Grow_Time.Add("lettuce", 30.0f);
+        Grow_Time.Add("lettuce", 50.0f);
     }
 
     public void Init(int num, string type, string microbe ,TimeSpan time)
@@ -82,6 +83,10 @@ public class FieldManager : MonoBehaviour
         }
     }
 
+    public void UsedMicrobePattern(int type)
+    {
+
+    }
     public void cultivation(string name)
     {
         switch (name)
@@ -100,6 +105,29 @@ public class FieldManager : MonoBehaviour
         }
     }
 
+    public void cultivation(string name, int[] usePattern)
+    {
+        switch (name)
+        {
+            case "lettuce":
+                for(int i = 0; i < usePattern.Length; i++)
+                {
+                    if (usePattern[i] == 1)
+                    {
+                        if(i == FieldNum)
+                        {
+                            yield = 2;
+                        }
+                    }
+                }
+                Lettuce.SetActive(true);
+                GameManager.instance.UseInventory("lettuce");
+                Growth_Type[name] = true;
+                isGrowing = true;
+                break;
+        }
+    }
+
     public void harvesting(string name)
     {
         switch (name)
@@ -110,7 +138,7 @@ public class FieldManager : MonoBehaviour
                 GrowingLettuce2.SetActive(false);
                 GrowingLettuce3.SetActive(false);
                 Lettuce.SetActive(false);
-                GameManager.instance.HarvestCrops("lettuce");
+                GameManager.instance.HarvestCrops("lettuce", yield);
                 isHarvest = false;
                 Growth_Type["lettuce"] = false;
                 Used_Microbe["microbe1"] = false;
@@ -129,6 +157,7 @@ public class FieldManager : MonoBehaviour
             {
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3))
                 {
+                    GrowingLettuce0.SetActive(false);
                     GrowingLettuce1.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3))
@@ -141,24 +170,29 @@ public class FieldManager : MonoBehaviour
                     GrowingLettuce2.SetActive(false);
                     GrowingLettuce3.SetActive(true);
                     isHarvest = true;
+                    isGrowing = false;
                 }
             }
 
             else
             {
-                Grow_Time["lettuce"] -= 10;
+                Grow_Time["lettuce"] = 40f;
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 1 / 3))
                 {
+                    GrowingLettuce0.SetActive(false);
                     GrowingLettuce1.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"] * 2 / 3))
                 {
+                    GrowingLettuce1.SetActive(false);
                     GrowingLettuce2.SetActive(true);
                 }
                 if (GameManager.instance.Growth_Time_Manager("lettuce", FieldNum) >= TimeSpan.FromSeconds(Grow_Time["lettuce"]))
                 {
+                    GrowingLettuce2.SetActive(false);
                     GrowingLettuce3.SetActive(true);
                     isHarvest = true;
+                    isGrowing = false;
                 }
             }
         }

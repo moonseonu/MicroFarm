@@ -242,12 +242,6 @@ public class UIManager : MonoBehaviour
                 isMenuOpen = false;
 
                 GameManager.instance.Planting("close");
-
-                for (int i = 0; i < 9; i++)
-                {
-                    GameObject field = GameObject.Find("Construction").transform.Find("ParentField").GetChild(i).gameObject;
-                    FieldManager fm = field.GetComponent<FieldManager>();
-                }
                 break;
 
             case "exit":
@@ -414,7 +408,7 @@ public class UIManager : MonoBehaviour
                                 break;
                             }
                         }
-                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = 1 };
+                        Slot Newslot = new Slot { item = StorageSlot[name], quantity = num };
                         slots.Add(Newslot);
                         Newslot.quantity_text = temp.transform.Find("Count").GetComponent<TMP_Text>();
                         Newslot.quantity_text.text = Newslot.quantity.ToString();

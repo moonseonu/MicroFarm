@@ -90,6 +90,22 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int gameMoney;
     [SerializeField] private string useItem = "";
 
+    [SerializeField] private List<int[]> MicrobesPattern = new List<int[]>
+    {
+        new int[]{1, 0, 1, 
+                  0, 1, 0,
+                  1, 0, 1},
+
+        new int[]{1, 0, 0,
+                  0, 1, 0,
+                  0, 0, 1},
+
+        new int[]{0, 1, 0,
+                  1, 1, 1,
+                  0, 1, 0}
+    };
+
+    private int UsedPattern = -1;
     /// <summary>
     /// ÁÂÇ¥ ¸¸µé±â¿ë µñ¼Å³Ê¸®
     /// </summary>
@@ -481,8 +497,29 @@ public class GameManager : MonoBehaviour
                                 {
                                     if (!fm.isHarvest)
                                     {
-                                        if (data.Inventory[useItem] > 0)
-                                            fm.cultivation(useItem);
+                                        if(useItem != "microbe1")
+                                        {
+                                            if (data.Inventory[useItem] > 0)
+                                            {
+
+                                                if (UsedPattern != -1)
+                                                {
+                                                    Debug.Log(UsedPattern);
+                                                    fm.cultivation(useItem, MicrobesPattern[UsedPattern]);
+                                                }
+                                                else
+                                                {
+                                                    fm.cultivation(useItem);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (data.Microbe[useItem] > 0)
+                                            {
+                                                fm.cultivation(useItem);
+                                            }
+                                        }
                                     }
                                     else
                                     {
@@ -518,6 +555,43 @@ public class GameManager : MonoBehaviour
                 break;
 
             case "close":
+                if(useItem == "microbe1")
+                {
+                    int[] useMicrobe = new int[9];
+                    for(int i = 0; i < data.fieldDatas.Count; i++)
+                    {
+                        if (data.fieldDatas[i].microbe == useItem)
+                        {
+                            useMicrobe[i] = 1;
+                        }
+                        else
+                        {
+                            useMicrobe[i] = 0;
+                        }
+                    }
+                    for(int j = 0; j < MicrobesPattern.Count; j++)
+                    {
+                        if (MicrobesPattern[j].Length != useMicrobe.Length)
+                        {
+                            continue;
+                        }
+                        bool isMatching = true;
+                        for(int k = 0; k < useMicrobe.Length; k++)
+                        {
+                            if (useMicrobe[k] != MicrobesPattern[j][k])
+                            {
+                                isMatching = false;
+                                break;
+                            }
+                        }
+                        if (isMatching)
+                        {
+                            UsedPattern = j;
+                            break;
+                        }
+                    }    
+
+                }
                 useItem = "";
                 break;
         }
@@ -562,10 +636,10 @@ public class GameManager : MonoBehaviour
         usedName = name;
     }
 
-    public void HarvestCrops(string name)
+    public void HarvestCrops(string name, int yield)
     {
-        data.CropWarehouse[name] += 1;
-        ui.AddStorage(name, 1, false);
+        data.CropWarehouse[name] += 1 * yield;
+        ui.AddStorage(name, 1 * yield, false);
 
         int random = UnityEngine.Random.Range(0, 1);
         if(random == 0)
@@ -590,7 +664,6 @@ public class GameManager : MonoBehaviour
     {
         if (GameMoney >= data.AuctionPrice[name])
         {
-            Debug.Log("Fdaf");
             AddInventory(name);
             GameMoney -= num * data.SeedPrice[name];
             ui.ui.Money = GameMoney;
@@ -618,6 +691,7 @@ public class GameManager : MonoBehaviour
         if(ExistData != null)
         {
             ExistData.type = "";
+            ExistData.microbe = "";
             ExistData.start_time = DateTime.MinValue;
         }
     }
