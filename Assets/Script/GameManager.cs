@@ -504,7 +504,6 @@ public class GameManager : MonoBehaviour
 
                                                 if (UsedPattern != -1)
                                                 {
-                                                    Debug.Log(UsedPattern);
                                                     fm.cultivation(useItem, MicrobesPattern[UsedPattern]);
                                                 }
                                                 else
@@ -520,6 +519,9 @@ public class GameManager : MonoBehaviour
                                                 fm.cultivation(useItem);
                                             }
                                         }
+
+                                        AudioSource audio = fm.GetComponent<AudioSource>();
+                                        audio.Play();
                                     }
                                     else
                                     {
